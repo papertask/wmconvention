@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.0.6
+  Version: 5.0.7
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.0.6');
+define('NEWSLETTER_VERSION', '5.0.7');
 
 global $wpdb, $newsletter;
 
@@ -137,7 +137,7 @@ class Newsletter extends NewsletterModule {
         // Here because the upgrade is called by the parent constructor and uses the scheduler
         add_filter('cron_schedules', array($this, 'hook_cron_schedules'), 1000);
 
-        parent::__construct('main', '1.3.1');
+        parent::__construct('main', '1.3.2');
 
         $max = $this->options['scheduler_max'];
         if (!is_numeric($max)) {
@@ -260,7 +260,7 @@ class Newsletter extends NewsletterModule {
   `type` varchar(50) NOT NULL DEFAULT '',
   `query` longtext,
   `editor` tinyint(4) NOT NULL DEFAULT '0',
-  `sex` char(1) NOT NULL DEFAULT '',
+  `sex` varchar(20) NOT NULL DEFAULT '',
   `theme` varchar(50) NOT NULL DEFAULT '',
   `message_text` longtext,
   `preferences` longtext,
@@ -607,6 +607,7 @@ class Newsletter extends NewsletterModule {
             // Before try to send, check the limits.
             if (!$test && $this->limits_exceeded()) {
                 $result = false;
+                if ($this->the_mailer != null) $this->the_mailer->flush();
                 break;
             }
 
@@ -643,7 +644,7 @@ class Newsletter extends NewsletterModule {
                 }
             }
 
-            $r = $this->mail($user->email, $s, array('html' => $m, 'text' => $mt), $headers);
+            $r = $this->mail($user->email, $s, array('html' => $m, 'text' => $mt), $headers, true);
 
             $status = $r ? 0 : 1;
 
@@ -652,6 +653,8 @@ class Newsletter extends NewsletterModule {
             $this->email_limit--;
             $count++;
         }
+        if ($this->the_mailer != null) $this->the_mailer->flush();
+        
         $end_time = microtime(true);
 
         if ($count > 0) {
@@ -752,10 +755,15 @@ class Newsletter extends NewsletterModule {
     function register_mail_method($callable) {
         $this->mail_method = $callable;
     }
+    
+    var $the_mailer = null;
+    function register_mailer($mailer) {
+        $this->the_mailer = $mailer;
+    }    
 
     var $mail_last_error = '';
 
-    function mail($to, $subject, $message, $headers = null) {
+    function mail($to, $subject, $message, $headers = null, $enqueue = false) {
         $this->mail_last_error = '';
         //$this->logger->debug('mail> To: ' . $to);
         //$this->logger->debug('mail> Subject: ' . $subject);
@@ -789,6 +797,17 @@ class Newsletter extends NewsletterModule {
             }
         }
 
+        if ($this->the_mailer != null) {
+            $r = $this->the_mailer->mail($to, $subject, $message, $headers, $enqueue);
+            if (is_wp_error($r)) {
+                /* @var $r WP_Error */
+                $this->mail_last_error = $r->get_error_message();
+                return false;
+            }
+            return true;
+        }
+
+                    
         if ($this->mail_method != null) {
             //$this->logger->debug('mail> alternative mail method found');
             return call_user_func($this->mail_method, $to, $subject, $message, $headers);
