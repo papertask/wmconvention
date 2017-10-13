@@ -267,6 +267,7 @@ if ($email['editor'] == 0) {
             mode: "specific_textareas",
             editor_selector: "visual",
             statusbar: true,
+            allow_conditional_comments: true,
             table_toolbar: "tableprops tablecellprops tabledelete | tableinsertrowbefore tableinsertrowafter tabledeleterow | " +
                     "tableinsertcolbefore tableinsertcolafter tabledeletecol",
             toolbar: "formatselect fontselect fontsizeselect | bold italic underline strikethrough forecolor backcolor | alignleft alignright aligncenter alignjustify | bullist numlist | link unlink | image",

@@ -593,7 +593,7 @@ class NewsletterControls {
         echo '<script>jQuery("#options-' . esc_attr($name) . '").select2({templateResult: tnp_select_images, templateSelection: tnp_select_images_selection});</script>';
     }
     
-    function select2($name, $options, $first = null, $multiple = false) {
+    function select2($name, $options, $first = null, $multiple = false, $style = "width: 100%") {
         
         if ($multiple)
             $option_name = "options[" . esc_attr($name) . "][]";
@@ -601,7 +601,7 @@ class NewsletterControls {
         
         $value = $this->get_value($name);
 
-        echo '<select id="options-' . esc_attr($name) . '" name="' . $option_name . '" style="width: 100%" ' . ($multiple ? 'multiple="multiple"' : '') . '>';
+        echo '<select id="options-' . esc_attr($name) . '" name="' . $option_name . '" style="'. $style .'" ' . ($multiple ? 'multiple="multiple"' : '') . '>';
         if (!empty($first)) {
             echo '<option value="">' . esc_html($first) . '</option>';
         }
@@ -1046,7 +1046,7 @@ class NewsletterControls {
             $lists['' . $i] = '(' . $i . ') ' . $options_profile['list_' . $i];
         }
         $this->select($name, $lists);
-        echo ' <a href="admin.php?page=newsletter_subscription_lists" target="_blank"><i class="fa fa-edit"></i></a></p>';
+        echo ' <a href="admin.php?page=newsletter_subscription_lists" target="_blank"><i class="fa fa-edit"></i></a>';
     }
 
     function date($name) {

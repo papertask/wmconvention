@@ -246,7 +246,7 @@
     color: #444;
 }
 
-#tnp-body th, 
+#tnp-body tbody th, 
 #tnp-body td, 
 #tnp-body td p,
 #tnp-body td .button,
@@ -266,6 +266,16 @@
     background-color: #fff;
     border: 1px solid #ECF0F1;
     margin-top: 2em;
+}
+
+#tnp-body .widefat thead {
+    background-color: #3498DB;
+    font-family: "Montserrat", sans-serif;
+    color: #fff !important;
+}
+
+#tnp-body .widefat thead tr th {
+    color: #fff !important;
 }
 
 #tnp-body .form-table th {
