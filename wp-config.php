@@ -27,7 +27,7 @@ define('DB_NAME', 'wmconvention');
 define('DB_USER', 'root');
 
 /** MySQL数据库密码 */
-define('DB_PASSWORD', 'Liuyuhan2016!');
+define('DB_PASSWORD', 'Liuyuhan2016!@#');
 
 /** MySQL主机 */
 define('DB_HOST', 'localhost');
