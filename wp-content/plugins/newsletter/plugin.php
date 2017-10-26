@@ -4,7 +4,7 @@
   Plugin Name: Newsletter
   Plugin URI: https://www.thenewsletterplugin.com/plugins/newsletter
   Description: Newsletter is a cool plugin to create your own subscriber list, to send newsletters, to build your business. <strong>Before update give a look to <a href="https://www.thenewsletterplugin.com/category/release">this page</a> to know what's changed.</strong>
-  Version: 5.0.8
+  Version: 5.0.9
   Author: Stefano Lissa & The Newsletter Team
   Author URI: https://www.thenewsletterplugin.com
   Disclaimer: Use at your own risk. No warranty expressed or implied is provided.
@@ -14,7 +14,7 @@
  */
 
 // Used as dummy parameter on css and js links
-define('NEWSLETTER_VERSION', '5.0.8');
+define('NEWSLETTER_VERSION', '5.0.9');
 
 global $wpdb, $newsletter;
 
@@ -183,7 +183,7 @@ class Newsletter extends NewsletterModule {
 
         // TODO: Meditation on how to use those ones...
         register_activation_hook(__FILE__, array($this, 'hook_activate'));
-        //register_deactivation_hook(__FILE__, array(&$this, 'hook_deactivate'));
+        register_deactivation_hook(__FILE__, array($this, 'hook_deactivate'));
 
         add_action('admin_init', array($this, 'hook_admin_init'));
 
@@ -192,9 +192,6 @@ class Newsletter extends NewsletterModule {
         add_filter('the_content', array($this, 'hook_the_content'), 99);
 
         if (is_admin()) {
-            if ($this->is_admin_page()) {
-                add_action('in_admin_header', array($this, 'hook_in_admin_header'), 999);
-            }
             add_action('admin_head', array($this, 'hook_admin_head'));
 
             // Protection against strange schedule removal on some installations
@@ -206,10 +203,6 @@ class Newsletter extends NewsletterModule {
 
             add_action('admin_menu', array($this, 'add_extensions_menu'), 90);
         }
-    }
-
-    function hook_in_admin_header() {
-        //remove_all_filters('admin_notices');
     }
 
     function hook_activate() {
@@ -225,6 +218,12 @@ class Newsletter extends NewsletterModule {
         if (!$install_time) {
             update_option('newsletter_install_time', time(), false);
         }
+        
+        Newsletter::instance()->upgrade();
+        NewsletterUsers::instance()->upgrade();
+        NewsletterEmails::instance()->upgrade();
+        NewsletterSubscription::instance()->upgrade();
+        NewsletterStatistics::instance()->upgrade();        
     }
 
     function first_install() {
@@ -981,7 +980,6 @@ class Newsletter extends NewsletterModule {
 
     function hook_deactivate() {
         wp_clear_scheduled_hook('newsletter');
-        wp_clear_scheduled_hook('newsletter_feed');
     }
 
     function hook_cron_schedules($schedules) {
@@ -989,10 +987,6 @@ class Newsletter extends NewsletterModule {
             'interval' => NEWSLETTER_CRON_INTERVAL, // seconds
             'display' => 'Newsletter'
         );
-//        $schedules['newsletter_weekly'] = array(
-//            'interval' => 86400 * 7, // seconds
-//            'display' => 'Newsletter Weekly'
-//        );
         return $schedules;
     }
 
@@ -1510,79 +1504,5 @@ require_once NEWSLETTER_DIR . '/subscription/subscription.php';
 require_once NEWSLETTER_DIR . '/emails/emails.php';
 require_once NEWSLETTER_DIR . '/users/users.php';
 require_once NEWSLETTER_DIR . '/statistics/statistics.php';
-if (!file_exists(WP_PLUGIN_DIR . '/newsletter-lock')) {
-    require_once NEWSLETTER_DIR . '/lock/lock.php';
-}
-
-if (!file_exists(WP_PLUGIN_DIR . '/newsletter-wpusers')) {
-    require_once NEWSLETTER_DIR . '/wp/wp.php';
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-feed')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/feed/feed.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/feed/feed.php';
-    }
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-followup')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/followup/followup.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/followup/followup.php';
-    }
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-reports')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/reports/reports.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/reports/reports.php';
-    }
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-mailjet')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/mailjet/mailjet.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/mailjet/mailjet.php';
-    }
-}
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-sendgrid')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/sendgrid/sendgrid.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/sendgrid/sendgrid.php';
-    }
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-facebook')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/facebook/facebook.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/facebook/facebook.php';
-    }
-}
-
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-popup')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/popup/popup.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/popup/popup.php';
-    }
-}
-
-if (!is_dir(WP_PLUGIN_DIR . '/newsletter-mandrill')) {
-    if (is_file(WP_CONTENT_DIR . '/extensions/newsletter/mandrill/mandrill.php')) {
-        require_once WP_CONTENT_DIR . '/extensions/newsletter/mandrill/mandrill.php';
-    }
-}
-
-
-require_once(dirname(__FILE__) . '/widget/standard.php');
-require_once(dirname(__FILE__) . '/widget/minimal.php');
-
-register_activation_hook(__FILE__, 'newsletter_activate');
-
-function newsletter_activate() {
-    Newsletter::instance()->upgrade();
-
-    NewsletterUsers::instance()->upgrade();
-    NewsletterEmails::instance()->upgrade();
-    NewsletterSubscription::instance()->upgrade();
-    NewsletterStatistics::instance()->upgrade();
-}
-
-register_activation_hook(__FILE__, 'newsletter_deactivate');
-
-function newsletter_deactivate() {
-    
-}
+require_once NEWSLETTER_DIR . '/widget/standard.php';
+require_once NEWSLETTER_DIR . '/widget/minimal.php';

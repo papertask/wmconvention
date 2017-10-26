@@ -20,7 +20,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.1.2');
+        parent::__construct('users', '1.1.3');
         add_action('init', array($this, 'hook_init'));
     }
 
@@ -72,7 +72,9 @@ class NewsletterUsers extends NewsletterModule {
   `country` varchar(4) NOT NULL DEFAULT '',
   `region` varchar(100) NOT NULL DEFAULT '',
   `city` varchar(100) NOT NULL DEFAULT '',
-  `unsub_email_id` int(11) NOT NULL DEFAULT '0',
+  `bounce_type` varchar(50) NOT NULL DEFAULT '',
+  `bounce_time` int(11) NOT NULL DEFAULT '0',
+  `unsub_email_id` int(11) NOT NULL DEFAULT '0',  
   `unsub_time` int(11) NOT NULL DEFAULT '0',\n";
 
         for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {

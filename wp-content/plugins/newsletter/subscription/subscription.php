@@ -36,8 +36,6 @@ class NewsletterSubscription extends NewsletterModule {
             add_action('admin_init', array($this, 'hook_admin_init'));
         } else {
             add_action('wp_enqueue_scripts', array($this, 'hook_wp_enqueue_scripts'));
-            add_action('wp_head', array($this, 'hook_wp_head'), 100);
-            add_action('wp_footer', array($this, 'hook_wp_footer'));
             add_shortcode('newsletter', array($this, 'shortcode_newsletter'));
             add_shortcode('newsletter_form', array($this, 'shortcode_newsletter_form'));
             add_shortcode('newsletter_profile', array($this, 'shortcode_newsletter_profile'));
@@ -189,14 +187,6 @@ class NewsletterSubscription extends NewsletterModule {
             default:
                 return;
         }
-    }
-
-    function hook_wp_head() {
-        
-    }
-
-    function hook_wp_footer() {
-        // Consider this: http://stackoverflow.com/questions/574944/how-to-load-up-css-files-using-javascript
     }
 
     function upgrade() {
@@ -374,17 +364,6 @@ class NewsletterSubscription extends NewsletterModule {
 
                     return $user;
                 }
-
-                // Resend the welcome email, if enabled
-//                if ($emails && !isset($options['resend_welcome_email_disabled']) && !isset($options['confirmed_disabled'])) {
-//                    $message = $options[$prefix . 'confirmed_message'];
-//                    $subject = $options[$prefix . 'confirmed_subject'];
-//                    $this->mail($user->email, $newsletter->replace($subject, $user), $newsletter->replace($message, $user));
-//                }
-//
-//                // Non persistent status to decide which message to show (already subscribed)
-//                $user->status = 'A';
-//                return $user;
             }
         }
 

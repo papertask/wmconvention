@@ -424,6 +424,9 @@ class NewsletterModule {
         }
 
         $result = array(array(), array());
+        
+        if (empty($posts)) return $result;
+        
         foreach ($posts as &$post) {
             if (self::is_post_old($post, $time))
                 $result[1][] = $post;

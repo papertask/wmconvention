@@ -663,7 +663,7 @@ class NewsletterControls {
         echo htmlspecialchars($this->data[$name]);
     }
 
-    function value_date($name, $show_remaining) {
+    function value_date($name, $show_remaining = true) {
         $time = $this->get_value($name);
 
         echo gmdate(get_option('date_format') . ' ' . get_option('time_format'), $time + get_option('gmt_offset') * 3600);
