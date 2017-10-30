@@ -20,7 +20,7 @@ class NewsletterUsers extends NewsletterModule {
     }
 
     function __construct() {
-        parent::__construct('users', '1.1.3');
+        parent::__construct('users', '1.1.4');
         add_action('init', array($this, 'hook_init'));
     }
 
@@ -58,6 +58,7 @@ class NewsletterUsers extends NewsletterModule {
   `list` int(11) NOT NULL DEFAULT '0',
   `profile` mediumtext,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated` int(11) NOT NULL DEFAULT '0',
   `followup_step` tinyint(4) NOT NULL DEFAULT '0',
   `followup_time` bigint(20) NOT NULL DEFAULT '0',
   `followup` tinyint(4) NOT NULL DEFAULT '0',

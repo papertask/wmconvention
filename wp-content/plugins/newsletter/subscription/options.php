@@ -283,6 +283,22 @@ if (empty($controls->data['page'])) {
                                 </p>
                             </td>
                         </tr>
+                        <tr valign="top">
+                            <th>Antiflood</th>
+                            <td>
+                                <?php $controls->select('antiflood', array(
+                                    0=>__('Disabled', 'newsletter'), 
+                                    5=>'5 ' . __('seconds', 'newsletter'),
+                                    10=>'10 ' . __('seconds', 'newsletter'),
+                                    15=>'15 ' . __('seconds', 'newsletter'),
+                                    30=>'30 ' . __('seconds', 'newsletter'),
+                                    60=>'1 ' . __('minute', 'newsletter'),
+                                    120=>'2 ' . __('minutes', 'newsletter'),
+                                    300=>'5 ' . __('minutes', 'newsletter')
+                                    )); ?>
+                                <?php $controls->help('https://www.thenewsletterplugin.com/documentation/antiflood') ?>
+                            </td>
+                        </tr>
                     </table>
 
                     <h3>Special cases</h3>

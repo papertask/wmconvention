@@ -144,7 +144,7 @@ class NewsletterStatistics extends NewsletterModule {
                 $this->logger->info('Open already registered');
                 // MAybe an update for some fields?
             } else {
-
+                $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=1, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
                 $res = $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
                     'email_id' => (int) $email_id,
                     'user_id' => (int) $user_id,

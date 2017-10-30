@@ -42,7 +42,7 @@ class NewsletterSubscription extends NewsletterModule {
             add_shortcode('newsletter_field', array($this, 'shortcode_newsletter_field'));
         }
     }
-    
+
     function hook_admin_init() {
         if (isset($_GET['page']) && $_GET['page'] === 'newsletter_subscription_forms') {
             header('X-XSS-Protection: 0');
@@ -91,6 +91,17 @@ class NewsletterSubscription extends NewsletterModule {
             // normal subscription
             case 's':
             case 'subscribe':
+                // Flood check
+                if (!empty($this->options['antiflood'])) {
+                    $ip = $_SERVER['REMOTE_ADDR'];
+                    $email = $this->is_email($_REQUEST['ne']);
+                    $updated = $wpdb->get_var($wpdb->prepare("select updated from " . NEWSLETTER_USERS_TABLE . " where ip=%s or email=%s order by updated desc limit 1", $ip, $email));
+
+                    if ($updated && time() - $updated < $this->options['antiflood']) {
+                        die('Too quick');
+                    }
+                }
+
                 if (!empty($this->options['antibot_disable']) || $this->antibot_form_check()) {
                     $user = $this->subscribe();
 
@@ -283,15 +294,33 @@ class NewsletterSubscription extends NewsletterModule {
         if ($sub == '') {
             // For compatibility the options are wrongly named
             $options = get_option('newsletter', array());
-            if (!is_array($options)) $options = array();
+            if (!is_array($options))
+                $options = array();
             return $options;
-            
         }
         if ($sub == 'profile') {
             // For compatibility the options are wrongly named
             return get_option('newsletter_profile', array());
         }
         return parent::get_options($sub);
+    }
+
+    function set_updated($user, $time = 0, $ip = '') {
+        global $wpdb;
+        if (!$time)
+            $time = time();
+
+        if (!$ip)
+            $ip = $_SERVER['REMOTE_ADDR'];
+
+        if (is_object($user))
+            $id = $user->id;
+        else if (is_array($user))
+            $id = $user['id'];
+
+        $id = (int) $id;
+
+        $wpdb->update(NEWSLETTER_USERS_TABLE, array('updated' => $time, 'ip' => $ip), array('id' => $id));
     }
 
     /**
@@ -346,6 +375,7 @@ class NewsletterSubscription extends NewsletterModule {
                 if ($user->status == 'C') {
 
                     set_transient($user->id . '-' . $user->token, $_REQUEST, 3600 * 48);
+                    $this->set_updated($user);
 
                     // A second subscription always require confirmation otherwise anywan can change other users' data
                     $user->status = 'S';
@@ -385,6 +415,8 @@ class NewsletterSubscription extends NewsletterModule {
             $user['status'] = $opt_in == 1 ? 'C' : 'S';
         }
 
+        $user['updated'] = time();
+
         $user = apply_filters('newsletter_user_subscribe', $user);
         // TODO: should be removed!!!
         if (defined('NEWSLETTER_FEED_VERSION')) {
@@ -411,10 +443,10 @@ class NewsletterSubscription extends NewsletterModule {
 
         if (empty($options[$prefix . 'disabled'])) {
             $message = $options[$prefix . 'message'];
-            
+
             if ($user->status == 'S') {
                 $message = $this->add_microdata($message);
-           }
+            }
 
             // TODO: This is always empty!
             //$message_text = $options[$prefix . 'message_text'];
@@ -424,7 +456,7 @@ class NewsletterSubscription extends NewsletterModule {
         }
         return $user;
     }
-    
+
     function add_microdata($message) {
         return $message . '<span itemscope itemtype="http://schema.org/EmailMessage"><span itemprop="description" content="Email address confirmation"></span><span itemprop="action" itemscope itemtype="http://schema.org/ConfirmAction"><meta itemprop="name" content="Confirm Subscription"><span itemprop="handler" itemscope itemtype="http://schema.org/HttpActionHandler"><meta itemprop="url" content="{subscription_confirm_url}"><link itemprop="method" href="http://schema.org/HttpRequestMethod/POST"></span></span></span>';
     }
@@ -459,8 +491,9 @@ class NewsletterSubscription extends NewsletterModule {
         } else if (isset($_SERVER['HTTP_REFERER'])) {
             $user['http_referer'] = strip_tags(trim($_SERVER['HTTP_REFERER']));
         }
-        
-        if (strlen($user['http_referer']) > 200) $user['http_referer'] = substr($user['http_referer'], 0, 200);
+
+        if (strlen($user['http_referer']) > 200)
+            $user['http_referer'] = substr($user['http_referer'], 0, 200);
 
         // New profiles
         for ($i = 1; $i <= NEWSLETTER_PROFILE_MAX; $i++) {
@@ -526,8 +559,8 @@ class NewsletterSubscription extends NewsletterModule {
             include NEWSLETTER_DIR . '/subscription/email.php';
             $message = ob_get_clean();
         }
-        
-        $headers = array('Auto-Submitted'=>'auto-generated');
+
+        $headers = array('Auto-Submitted' => 'auto-generated');
 
         $message = Newsletter::instance()->replace($message);
         return Newsletter::instance()->mail($to, $subject, $message, $headers);
@@ -764,6 +797,7 @@ class NewsletterSubscription extends NewsletterModule {
 
         if (isset($_REQUEST['ncu'])) {
             $this->options['confirmation_url'] = esc_url($_REQUEST['ncu']);
+            $this->options['confirmed_url'] = esc_url($_REQUEST['ncu']);
         }
 
         if ($email) {
@@ -1474,7 +1508,7 @@ class NewsletterSubscription extends NewsletterModule {
 
         if (empty($user)) {
             if (empty($content)) {
-                return __('Subscriber profile not found.','newsletter');
+                return __('Subscriber profile not found.', 'newsletter');
             } else {
                 return $content;
             }
@@ -1492,7 +1526,7 @@ class NewsletterSubscription extends NewsletterModule {
      */
     function get_profile_form($user) {
         $options = get_option('newsletter_profile');
-        
+
         $buffer = '';
 
         $buffer .= '<div class="tnp-profile">';
@@ -1580,9 +1614,9 @@ class NewsletterSubscription extends NewsletterModule {
 
     function get_profile_form_html5($user) {
         $options = get_option('newsletter_profile');
-        
+
         $buffer = '';
-        
+
         $buffer .= '<div class="tnp tnp-profile">';
         $buffer .= '<form action="' . esc_attr(home_url('/') . '?na=ps') . '" method="post" onsubmit="return newsletter_check(this)">';
         $buffer .= '<input type="hidden" name="nk" value="' . esc_attr($user->id . '-' . $user->token) . '">';
@@ -1635,7 +1669,7 @@ class NewsletterSubscription extends NewsletterModule {
             }
 
             if ($options['profile_' . $i . '_type'] == 'select') {
-                $buffer .= '<select class="tnp-profile tnp-profile-' . $i . '" name="np' . $i . '"' . 
+                $buffer .= '<select class="tnp-profile tnp-profile-' . $i . '" name="np' . $i . '"' .
                         ($options['profile_' . $i . '_rules'] == 1 ? ' required' : '') . '>';
                 $opts = explode(',', $options['profile_' . $i . '_options']);
                 for ($j = 0; $j < count($opts); $j++) {

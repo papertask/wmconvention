@@ -52,10 +52,7 @@ function newsletter_print_entries($group) {
                 <li><a href="?page=newsletter_subscription_options"><i class="fa fa-sign-in"></i> <?php _e('Subscription', 'newsletter') ?>
                         <small><?php _e('The subscription process in detail', 'newsletter') ?></small></a></li>
                         
-                <?php if (!file_exists(WP_PLUGIN_DIR . '/newsletter-wpusers')) { ?>        
-                <li><a href="?page=newsletter_wp_index"><i class="fa fa-wordpress"></i> <?php _e('WP Registration', 'newsletter') ?>
-                        <small><?php _e('Subscribe on WP registration', 'newsletter') ?></small></a></li>
-                <?php } ?>        
+      
                 <li><a href="?page=newsletter_subscription_profile"><i class="fa fa-check-square-o"></i> <?php _e('Subscription Form Fields, Buttons, Labels', 'newsletter') ?>
                         <small><?php _e('When and what data to collect', 'newsletter') ?></small></a></li>
                 <li><a href="?page=newsletter_subscription_lists"><i class="fa fa-th-list"></i> <?php _e('Lists', 'newsletter') ?>

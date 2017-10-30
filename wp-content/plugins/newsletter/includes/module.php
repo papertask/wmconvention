@@ -302,8 +302,10 @@ class NewsletterModule {
      */
     static function normalize_email($email) {
         $email = strtolower(trim($email));
-        if (!is_email($email))
+        if (!is_email($email)) {
             return null;
+        }
+        //$email = apply_filters('newsletter_normalize_email', $email);
         return $email;
     }
 
@@ -315,26 +317,33 @@ class NewsletterModule {
 
     static function normalize_sex($sex) {
         $sex = trim(strtolower($sex));
-        if ($sex != 'f' && $sex != 'm')
+        if ($sex != 'f' && $sex != 'm') {
             $sex = 'n';
+        }
         return $sex;
     }
 
     static function is_email($email, $empty_ok = false) {
         $email = strtolower(trim($email));
-        if ($empty_ok && $email == '')
-            return true;
+        
+        if ($email == '') {
+            return $empty_ok;
+        }
 
-        if (!is_email($email))
+        if (!is_email($email)) {
             return false;
+        }
 
         // TODO: To be moved on the subscription module and make configurable
-        if (strpos($email, 'mailinator.com') !== false)
+        if (strpos($email, 'mailinator.com') !== false) {
             return false;
-        if (strpos($email, 'guerrillamailblock.com') !== false)
+        }
+        if (strpos($email, 'guerrillamailblock.com') !== false) {
             return false;
-        if (strpos($email, 'emailtemporanea.net') !== false)
+        }
+        if (strpos($email, 'emailtemporanea.net') !== false) {
             return false;
+        }
         return true;
     }
 
@@ -464,11 +473,6 @@ class NewsletterModule {
                 return $image[0];
             }
         }
-    }
-
-    /** Returns true if the named extension is installed. */
-    static function extension_exists($name) {
-        return is_file(WP_CONTENT_DIR . "/extensions/newsletter/$name/$name.php");
     }
 
     /**
@@ -688,10 +692,11 @@ class NewsletterModule {
         global $wpdb;
 
         // To simplify the reaload of a user passing the user it self.
-        if (is_object($id_or_email))
+        if (is_object($id_or_email)) {
             $id_or_email = $id_or_email->id;
-        else if (is_array($id_or_email))
+        } else if (is_array($id_or_email)) {
             $id_or_email = $id_or_email['id'];
+        }
 
         $id_or_email = strtolower(trim($id_or_email));
 

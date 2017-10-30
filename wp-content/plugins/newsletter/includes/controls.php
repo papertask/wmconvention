@@ -1367,5 +1367,9 @@ class NewsletterControls {
         }
         return $buffer;
     }
+    
+    static function help($url, $label='') {
+        echo '<a href="', $url, '" target="_blank" title="', esc_attr($label), '"><i class="fa fa-question-circle"></i></a>';
+    }
 
 }

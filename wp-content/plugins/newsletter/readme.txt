@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
 Tested up to: 4.8.2
-Stable tag: 5.0.9
+Stable tag: 5.1.1
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -84,6 +84,17 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+
+== 5.1.1 ==
+
+* Fix on email check
+
+== 5.1.0 ==
+
+* "ncu" parameter can be used for alternative welcome page as well, not only confirmation, when single opt in is selected
+* Removed the old "email alternative" to create custom subscription messages templates (has no effects)
+* Added the antiflood system
 
 == 5.0.9 ==
 
@@ -443,6 +454,7 @@ Thank you, The Newsletter Team
 = 4.1.2 =
 
 * Minor security fix (on admin side with admin access)
+
 = 4.2.0 =
 
 * Added support for Reports Extension 4
@@ -622,7 +634,7 @@ Thank you, The Newsletter Team
 * Added import subscribers from CSV file
 * Updated the WP compatibility version number
 * Fixed the save button on sent emails
-* Fixed the List-�Unsubscribe header with new URL schema
+* Fixed the List-Unsubscribe header with new URL schema
 
 = 3.7.8 =
 
