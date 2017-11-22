@@ -2,8 +2,8 @@
 /**
  * Plugin Name: WP Rocket
  * Plugin URI: https://wp-rocket.me
- * Description: 火箭缓存优化加速-更多WordPress汉化主题、主题升级、问题咨询请访问：<strong><a href="http://www.qcwlseo.com">http://www.qcwlseo.com</a></strong>或者光临<a href="http://qcseo.taobao.com">倾尘网络淘宝店</a>
- * Version: 2.10.5
+ * Description: The best WordPress performance plugin.
+ * Version: 2.10.9
  * Code Name: Endor
  * Author: WP Media
  * Contributors: Jonathan Buttigieg, Julio Potier, Remy Perona
@@ -19,10 +19,10 @@
 defined( 'ABSPATH' ) or die( 'Cheatin&#8217; uh?' );
 
 // Rocket defines.
-define( 'WP_ROCKET_VERSION'             , '2.10.5' );
-define( 'WP_ROCKET_PRIVATE_KEY'         , false );
+define( 'WP_ROCKET_VERSION'             , '2.10.9' );
+define( 'WP_ROCKET_PRIVATE_KEY'         , '');
 define( 'WP_ROCKET_SLUG'                , 'wp_rocket_settings' );
-define( 'WP_ROCKET_WEB_MAIN'            , false );
+define( 'WP_ROCKET_WEB_MAIN'            , 'https://wp-rocket.me/');
 define( 'WP_ROCKET_WEB_API'             , WP_ROCKET_WEB_MAIN . 'api/wp-rocket/' );
 define( 'WP_ROCKET_WEB_CHECK'           , WP_ROCKET_WEB_MAIN . 'check_update.php' );
 define( 'WP_ROCKET_WEB_VALID'           , WP_ROCKET_WEB_MAIN . 'valid_key.php' );

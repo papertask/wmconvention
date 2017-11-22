@@ -39,12 +39,13 @@ if ( ! isset( $_SERVER['REQUEST_METHOD'] ) || 'GET' !== $_SERVER['REQUEST_METHOD
 
 // Get the correct config file.
 $rocket_config_path = WP_CONTENT_DIR . '/wp-rocket-config/';
+$real_rocket_config_path = realpath( $rocket_config_path ) . DIRECTORY_SEPARATOR;
 $host = ( isset( $_SERVER['HTTP_HOST'] ) ) ? $_SERVER['HTTP_HOST'] : time();
 $host = trim( strtolower( $host ), '.' );
 $host = urlencode( $host );
 
 $continue = false;
-if ( realpath( $rocket_config_path . $host . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.php' ), $rocket_config_path ) ) {
+if ( realpath( $rocket_config_path . $host . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.php' ), $real_rocket_config_path ) ) {
 	include( $rocket_config_path . $host . '.php' );
 	$continue = true;
 } else {
@@ -55,13 +56,13 @@ if ( realpath( $rocket_config_path . $host . '.php' ) && 0 === stripos( realpath
 	foreach ( $path as $p ) {
 		static $dir;
 
-		if ( realpath( $rocket_config_path . $host . '.' . $p . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.' . $p . '.php' ), $rocket_config_path ) ) {
+		if ( realpath( $rocket_config_path . $host . '.' . $p . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.' . $p . '.php' ), $real_rocket_config_path ) ) {
 			include( $rocket_config_path . $host . '.' . $p . '.php' );
 			$continue = true;
 			break;
 		}
 
-		if ( realpath( $rocket_config_path . $host . '.' . $dir . $p . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.' . $dir . $p . '.php' ), $rocket_config_path ) ) {
+		if ( realpath( $rocket_config_path . $host . '.' . $dir . $p . '.php' ) && 0 === stripos( realpath( $rocket_config_path . $host . '.' . $dir . $p . '.php' ), $real_rocket_config_path ) ) {
 			include( $rocket_config_path . $host . '.' . $dir . $p . '.php' );
 			$continue = true;
 			break;
@@ -96,6 +97,7 @@ if ( ! empty( $_GET )
 	&& ( ! isset( $_GET['s'] ) )
 	&& ( ! isset( $_GET['age-verified'] ) )
 	&& ( ! isset( $_GET['ao_noptimize'] ) )
+	&& ( ! isset( $_GET['usqp'] ) )
 	&& ( ! isset( $rocket_cache_query_strings ) || ! array_intersect( array_keys( $_GET ), $rocket_cache_query_strings ) )
 ) {
 	rocket_define_donotminify_constants( true );
@@ -298,7 +300,7 @@ function do_rocket_callback( $buffer ) {
 			rocket_put_content( $rocket_cache_filepath, $buffer . $footprint );
 
 			if ( function_exists( 'gzencode' ) ) {
-				rocket_put_content( $rocket_cache_filepath . '_gzip', gzencode( $buffer . get_rocket_footprint(), apply_filters( 'rocket_gzencode_level_compression', 3 ) ) );
+				rocket_put_content( $rocket_cache_filepath . '_gzip', gzencode( $buffer . $footprint, apply_filters( 'rocket_gzencode_level_compression', 3 ) ) );
 			}
 
 			// Send headers with the last modified time of the cache file.

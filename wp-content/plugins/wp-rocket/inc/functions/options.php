@@ -432,7 +432,7 @@ function get_rocket_exclude_js() {
 	$js_files = array_unique( array_merge( $js_files, (array) $rocket_excluded_enqueue_js ) );
 
 	if ( get_rocket_option( 'defer_all_js', 0 ) && get_rocket_option( 'defer_all_js_safe', 0 ) ) {
-		$js_files[] = $wp_scripts->registered['jquery-core']->src;
+		$js_files[] = parse_url( site_url( $wp_scripts->registered['jquery-core']->src), PHP_URL_PATH );
 	}
 
 	/**
@@ -507,7 +507,7 @@ function get_rocket_exclude_defer_js() {
 	$exclude_defer_js = array();
 
 	if ( get_rocket_option( 'defer_all_js', 0 ) && get_rocket_option( 'defer_all_js_safe', 0 ) ) {
-		$jquery = $wp_scripts->registered['jquery-core']->src;
+		$jquery = parse_url( site_url( $wp_scripts->registered['jquery-core']->src ), PHP_URL_PATH );
 		
 		if ( get_rocket_option( 'remove_query_strings', 0 ) ) {
 			$jquery = site_url( $jquery . '?ver=' . $wp_scripts->registered['jquery-core']->ver );
@@ -562,11 +562,6 @@ function get_rocket_exclude_async_css() {
  */
 function rocket_valid_key() {
 	return true;
-    if ( ! $rocket_secret_key = get_rocket_option( 'secret_key' ) ) {
-        return false;
-    }
-
-	return 8 == strlen( get_rocket_option( 'consumer_key' ) ) && hash_equals( $rocket_secret_key, hash( 'crc32', get_rocket_option( 'consumer_email' ) ) );
 }
 
 /**
@@ -577,15 +572,11 @@ function rocket_valid_key() {
  * @since 2.2 The function do the live check and update the option.
  */
 function rocket_check_key() {
-	// Recheck the license
+	// Recheck the license.
 	$return = rocket_valid_key();
 
 	if ( ! rocket_valid_key() ) {
-//		$response = wp_remote_get( WP_ROCKET_WEB_VALID, array( 'timeout' => 30 ) );
-		$json->data->consumer_key = '2b35dec65674314f5d8d9fe900dc03b8';
-		$json->data->consumer_email = 'example@example.com';
-		$json->data->secret_key = '4a2b0ceb5ec45ec5d8d9f56af476e31b';
-		$json->success = true;
+		$response = wp_remote_get( WP_ROCKET_WEB_VALID, array( 'timeout' => 30 ) );
 
 		$json = ! is_wp_error( $response ) ? json_decode( $response['body'] ) : false;
 		$rocket_options = array();
@@ -594,7 +585,7 @@ function rocket_check_key() {
 			$rocket_options['consumer_key'] 	= $json->data->consumer_key;
 			$rocket_options['consumer_email']	= $json->data->consumer_email;
 
-			if( $json->success ) {
+			if ( $json->success ) {
 				$rocket_options['secret_key'] = $json->data->secret_key;
 
 				if ( ! get_rocket_option( 'license' ) ) {
