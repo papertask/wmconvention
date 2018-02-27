@@ -184,7 +184,6 @@ PRIMARY KEY  (location_id)
 			$data['location_draggable']  	= sanitize_text_field( wp_unslash( $_POST['location_draggable'] ) );
 			$data['location_infowindow_default_open']  = sanitize_text_field( wp_unslash( $_POST['location_infowindow_default_open'] ) );
 			$data['location_animation']  	= sanitize_text_field( wp_unslash( $_POST['location_animation'] ) );
-			$data['location_author']  		= get_current_user_id();
 			if ( $entityID > 0 ) {
 				$where[ $this->unique ] = $entityID;
 			} else {

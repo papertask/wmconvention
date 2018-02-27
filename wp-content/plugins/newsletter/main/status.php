@@ -390,7 +390,7 @@ $options = $module->get_options('status');
                     <tr>
                         <td>Database wait timeout</td>
                         <td>
-                            <?php if ($wait_timeout < 300) { ?>
+                            <?php if ($wait_timeout < 30) { ?>
                                 <span class="tnp-ko">KO</span>
                             <?php } else { ?>
                                 <span class="tnp-ok">OK</span>
@@ -399,9 +399,9 @@ $options = $module->get_options('status');
                         </td>
                         <td>
                             Your database wait timeout is <?php echo $wait_timeout; ?> seconds<br>
-                            <?php if ($wait_timeout < 300) { ?>
-                                That value is low and could produce database connection errors while sending emails. Ask the provider to raise it
-                                at least to 300 seconds.
+                            <?php if ($wait_timeout < 30) { ?>
+                                That value is low and could produce database connection errors while sending emails or during long import
+                                sessions. Ask the provider to raise it at least to 60 seconds.
                             <?php } ?>
                         </td>
                     </tr>
@@ -585,7 +585,7 @@ $options = $module->get_options('status');
                         </td>
                         <td>
                             <?php if ($wp_cron_calls_avg > NEWSLETTER_CRON_INTERVAL * 1.1) { ?>
-                                The blog cron system is NOT triggere enough often.
+                                The blog cron system is NOT triggered enough often.
 
                             <?php } else { ?>
 

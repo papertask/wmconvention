@@ -260,7 +260,7 @@ class NewsletterSubscription extends NewsletterModule {
     }
 
     function first_install() {
-
+        
     }
 
     function admin_menu() {
@@ -1309,6 +1309,7 @@ class NewsletterSubscription extends NewsletterModule {
         if (isset($attrs['referrer'])) {
             $referrer = $attrs['referrer'];
         }
+
         $options_profile = get_option('newsletter_profile');
         $options = get_option('newsletter');
 
@@ -1334,6 +1335,8 @@ class NewsletterSubscription extends NewsletterModule {
             $buffer .= "<input type='hidden' name='ncu' value='" . esc_attr($attrs['confirmation_url']) . "'>\n";
         }
 
+        if (isset($attrs['lists']))
+            $attrs['list'] = $attrs['lists'];
         if (isset($attrs['list'])) {
             $arr = explode(',', $attrs['list']);
             foreach ($arr as $a) {
@@ -1372,18 +1375,43 @@ class NewsletterSubscription extends NewsletterModule {
         }
 
         $lists = '';
-        for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
-            if ($options_profile['list_' . $i . '_status'] != 2) {
-                continue;
+        if (!empty($attrs['lists_field_layout']) && $attrs['lists_field_layout'] == 'dropdown') {
+            for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
+                if ($options_profile['list_' . $i . '_status'] != 2) {
+                    continue;
+                }
+                $lists .= '<option value="' . $i . '"';
+                if ($options_profile['list_' . $i . '_checked'] == 1) {
+                    $lists .= ' selected';
+                }
+                $lists .= '>' . esc_html($options_profile['list_' . $i]) . '</option>';
+                $lists .= "\n";
             }
-            $lists .= '<div class="tnp-field tnp-field-list"><label><input class="tnp-preference" type="checkbox" name="nl[]" value="' . $i . '"';
-            if ($options_profile['list_' . $i . '_checked'] == 1) {
-                $lists .= ' checked';
+            if (!empty($attrs['lists_field_empty_label'])) {
+                $lists = '<option value="">' . $attrs['lists_field_empty_label'] . '</option>' . $lists;
             }
-            $lists .= '/>&nbsp;' . esc_html($options_profile['list_' . $i]) . '</label></div>';
+            if (!empty($lists)) {
+                $lists = '<select class="tnp-lists" name="nl[]" required>' . $lists . '</select>';
+            }
+        } else {
+            for ($i = 1; $i <= NEWSLETTER_LIST_MAX; $i++) {
+                if ($options_profile['list_' . $i . '_status'] != 2) {
+                    continue;
+                }
+                $lists .= '<div class="tnp-field tnp-field-list"><label><input class="tnp-preference" type="checkbox" name="nl[]" value="' . $i . '"';
+                if ($options_profile['list_' . $i . '_checked'] == 1) {
+                    $lists .= ' checked';
+                }
+                $lists .= '/>&nbsp;' . esc_html($options_profile['list_' . $i]) . '</label></div>';
+            }
         }
+
         if (!empty($lists)) {
-            $buffer .= '<div class="tnp-lists">' . $lists . '</div>';
+            $buffer .= '<div class="tnp-lists">';
+            if (!empty($attrs['lists_field_label'])) {
+                $buffer .= '<label>' . $attrs['lists_field_label'] . '</label>';
+            }
+            $buffer .= $lists . '</div>';
         }
 
         // Extra profile fields
@@ -1764,7 +1792,7 @@ class NewsletterSubscription extends NewsletterModule {
         if (!is_array($attrs)) {
             $attrs = array();
         }
-        $attrs = array_merge(array('class'=>'', 'referrer' => 'minimal', 'button' => $options_profile['subscribe'], 'placeholder' => $options_profile['email']), $attrs);
+        $attrs = array_merge(array('class' => '', 'referrer' => 'minimal', 'button' => $options_profile['subscribe'], 'placeholder' => $options_profile['email']), $attrs);
 
         $form = '';
         $form .= '<div class="tnp tnp-subscription-minimal ' . $attrs['class'] . '">';

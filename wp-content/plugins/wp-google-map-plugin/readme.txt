@@ -7,7 +7,7 @@ Author URI:        http://profiles.wordpress.org/flippercode/
 Author:            flippercode
 Donate link:       (a link for donating)
 Requires at least: 3.4
-Tested up to: 4.8.1
+Tested up to: 4.9.2
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -148,6 +148,9 @@ This section describes how to install the plugin and get it working.
 11. Display traffic real time conditions with traffic layer.
 
 == Changelog ==
+
+= 4.0.2 =
+* Fix: call_user_func_array is resolved.
 
 = 4.0.1 =
 * Fix: Blank Page on Add Map is fixed.

@@ -1,4 +1,6 @@
 <?php
+if (!defined('ABSPATH')) exit;
+if (version_compare(phpversion(), '5.3', '<')) return;
 
 class NewsletterWidgetMinimal extends WP_Widget {
 
@@ -97,5 +99,5 @@ class NewsletterWidgetMinimal extends WP_Widget {
 
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("NewsletterWidgetMinimal");'));
+add_action('widgets_init', function() {return register_widget("NewsletterWidgetMinimal");});
 ?>

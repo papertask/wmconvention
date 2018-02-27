@@ -1,5 +1,6 @@
 <?php
 if (!defined('ABSPATH')) exit;
+if (version_compare(phpversion(), '5.3', '<')) return;
 
 /**
  * Newsletter widget version 2.0: it'll replace the old version left for compatibility.
@@ -15,12 +16,22 @@ class NewsletterWidget extends WP_Widget {
         $field_wrapper_tag = 'div';
         if (!isset($instance['nl']) || !is_array($instance['nl'])) $instance['nl'] = array();
 
+        $instance = array_merge(array('lists_layout' => '',
+            'lists_empty_label' => '',
+            'lists_field_label' => ''), $instance);
+        
         $options_profile = get_option('newsletter_profile');
         //$form = NewsletterSubscription::instance()->get_form_javascript();
         $form = '';
         
         $form .= '<div class="tnp tnp-widget">';
-        $form .= NewsletterSubscription::instance()->get_subscription_form_html5('widget', null, array('list'=> implode(',', $instance['nl'])));
+        $form .= NewsletterSubscription::instance()->get_subscription_form_html5('widget', null, array(
+            'list'=> implode(',', $instance['nl']),
+            'lists_layout' => $instance['lists_layout'],
+            'lists_empty_label' => $instance['lists_empty_label'],
+            'lists_field_label' => $instance['lists_field_label'],
+            
+            ));
         $form .= "</div>\n";
         
         return $form;
@@ -174,7 +185,7 @@ class NewsletterWidget extends WP_Widget {
         if (!is_array($instance)) {
             $instance = array();
         }
-        $instance = array_merge(array('title' => '', 'text' => ''), $instance);
+        $instance = array_merge(array('title' => '', 'text' => '', 'lists_layout'=>'', 'lists_empty_label'=>'', 'lists_field_label'=>''), $instance);
         $options_profile = get_option('newsletter_profile');
         if (!isset($instance['nl']) || !is_array($instance['nl'])) $instance['nl'] = array();
         ?>
@@ -187,6 +198,24 @@ class NewsletterWidget extends WP_Widget {
             <label for="<?php echo $this->get_field_id('text'); ?>">
                 Introduction:
                 <textarea class="widefat" rows="10" cols="20" id="<?php echo $this->get_field_id('text'); ?>" name="<?php echo $this->get_field_name('text'); ?>"><?php echo esc_html($instance['text']); ?></textarea>
+            </label>
+            
+            <label>
+                Show lists as:
+                <select name="<?php echo $this->get_field_name('lists_layout'); ?>" id="<?php echo $this->get_field_id('lists_layout'); ?>" style="width: 100%">
+                    <option value="">Checkboxes</option>
+                    <option value="dropdown" <?php echo $instance['lists_layout']=='dropdown'?'selected':''?>>Dropdown</option>
+                </select>
+            </label>
+            <br>
+            <label for="<?php echo $this->get_field_id('lists_empty_label'); ?>">
+                First dropdown entry label:
+                <input class="widefat" id="<?php echo $this->get_field_id('lists_empty_label'); ?>" name="<?php echo $this->get_field_name('lists_empty_label'); ?>" type="text" value="<?php echo esc_attr($instance['lists_empty_label']); ?>" />
+            </label>
+            <br>
+            <label for="<?php echo $this->get_field_id('lists_field_label'); ?>">
+                Lists field label:
+                <input class="widefat" id="<?php echo $this->get_field_id('lists_field_label'); ?>" name="<?php echo $this->get_field_name('lists_field_label'); ?>" type="text" value="<?php echo esc_attr($instance['lists_field_label']); ?>" />
             </label>
             
             <br><br>
@@ -220,5 +249,5 @@ class NewsletterWidget extends WP_Widget {
 
 }
 
-add_action('widgets_init', create_function('', 'return register_widget("NewsletterWidget");'));
+add_action('widgets_init', function () {return register_widget("NewsletterWidget");});
 ?>

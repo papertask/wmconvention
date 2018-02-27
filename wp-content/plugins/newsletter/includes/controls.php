@@ -1202,14 +1202,18 @@ class NewsletterControls {
         }).on("select", function() {
             var media = tnp_uploader.state().get("selection").first();
             document.getElementById(name + "_id").value = media.id;
+            //alert(media.attributes.url);
             if (media.attributes.url.substring(0, 0) == "/") {
                 media.attributes.url = "' . site_url('/') . '" + media.attributes.url;
             }
             document.getElementById(name + "_url").value = media.attributes.url;
-            if (media.attributes.sizes.medium.url.substring(0, 0) == "/") {
-                media.attributes.sizes.medium.url = "' . site_url('/') . '" + media.attributes.sizes.medium.url;
+            
+            var img_url = media.attributes.url;
+            if (typeof media.attributes.sizes.medium !== "undefined") img_url = media.attributes.sizes.medium.url;
+            if (img_url.substring(0, 0) == "/") {
+                img_url = "' . site_url('/') . '" + img_url;
             }
-            document.getElementById(name + "_img").src = media.attributes.sizes.medium.url;
+            document.getElementById(name + "_img").src = img_url;
         }).open();
     }
     function newsletter_media_remove(name) {
@@ -1284,7 +1288,7 @@ class NewsletterControls {
         return NewsletterUsers::instance()->get_test_users();
     }
 
-    function css_font_size($name) {
+    function css_font_size($name = 'font_size') {
         $value = $this->get_value($name);
 
         echo '<select id="options-' . esc_attr($name) . '" name="options[' . esc_attr($name) . ']">';
@@ -1298,7 +1302,7 @@ class NewsletterControls {
         echo '</select>&nbsp;px';
     }
     
-    function css_font_family($name) {
+    function css_font_family($name = 'font_family') {
         $value = $this->get_value($name);
 
         $fonts = array('Helvetica, Arial, sans-serif', 'Arial Black, Gadget, sans-serif', 'Garamond, serif', 'Courier, monospace', 'Cominc Sans MS, cursive', 'Impact, Charcoal, sans-serif',
@@ -1416,7 +1420,11 @@ class NewsletterControls {
             $buffer .= ')';
         }
         if ($left) {
-            $buffer .= ', ' . gmdate('H:i:s', $time - time()) . ' left';
+            if ($time - time() < 0) {
+                $buffer .= ', ' . (time()-$time) . ' seconds late';
+            } else {
+                $buffer .= ', ' . gmdate('H:i:s', $time - time()) . ' left';
+            }
         }
         return $buffer;
     }
