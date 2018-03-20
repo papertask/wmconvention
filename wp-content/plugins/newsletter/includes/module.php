@@ -814,11 +814,13 @@ class NewsletterModule {
     function get_list($id) {
         global $wpdb;
         $id = (int) $id;
-        if (!$id) return null;
+        if (!$id)
+            return null;
         $list = get_option('newsletter_list_' . $id, array());
         $profile = get_option('newsletter_profile');
         $list['name'] = $profile['list_' . $id];
         $list['subscriber_count'] = $wpdb->get_var("select count(*) from " . NEWSLETTER_USERS_TABLE . " where status='C' and list_" . $id . "=1");
+        $list['status'] = (int) $profile['list_' . $id . '_status'];
         return $list;
     }
 
@@ -865,6 +867,7 @@ class NewsletterModule {
                 $value = trim($rules[2][$i]);
                 $value = preg_replace('|\s+|', ' ', $value);
                 $content = str_replace('class="' . $class . '"', 'class="' . $class . '" style="' . $value . '"', $content);
+                $content = str_replace('inline-class="' . $class . '"', 'style="' . $value . '"', $content);
             }
         }
 
@@ -915,6 +918,14 @@ class NewsletterModule {
             return false;
         }
         return $r;
+    }
+
+    function set_user_list($user, $list, $value) {
+        global $wpdb;
+
+        $list = (int) $list;
+        $value = $value ? 0 : 1;
+        $wpdb->update(NEWSLETTER_USERS_TABLE, array('list_' . $list => $value), array('id' => $user->id));
     }
 
     function set_user_field($id, $field, $value) {
@@ -1033,19 +1044,22 @@ class NewsletterModule {
             $options_subscription = NewsletterSubscription::instance()->options;
 
             $home_url = home_url('/');
-            
+
+            $nek = false;
             if ($email) {
                 $text = str_replace('{email_id}', $email->id, $text);
+                $text = str_replace('{email_key}', $email->id . '-' . $email->token, $text);
                 $text = str_replace('{email_subject}', $email->subject, $text);
                 $text = $this->replace_url($text, 'EMAIL_URL', $home_url . '?na=v&id=' . $email->id . '&amp;nk=' . $nk);
+                $nek = $email->id . '-' . $email->token;
             }
 
 
             $text = $this->replace_url($text, 'SUBSCRIPTION_CONFIRM_URL', $home_url . '?na=c&nk=' . $nk);
             $text = $this->replace_url($text, 'ACTIVATION_URL', $home_url . '?na=c&nk=' . $nk);
 
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_CONFIRM_URL', $home_url . '?na=uc&nk=' . $nk . ($email ? '&nek=' . $email->id : ''));
-            $text = $this->replace_url($text, 'UNSUBSCRIPTION_URL', $home_url . '?na=u&nk=' . $nk . ($email ? '&nek=' . $email->id : ''));
+            $text = $this->replace_url($text, 'UNSUBSCRIPTION_CONFIRM_URL', $home_url . '?na=uc&nk=' . $nk . ($nek ? '&nek=' . $nek : ''));
+            $text = $this->replace_url($text, 'UNSUBSCRIPTION_URL', $home_url . '?na=u&nk=' . $nk . ($nek ? '&nek=' . $nek : ''));
 
             // Obsolete.
             $text = $this->replace_url($text, 'FOLLOWUP_SUBSCRIPTION_URL', self::add_qs($base, 'nm=fs' . $id_token));
@@ -1053,15 +1067,17 @@ class NewsletterModule {
             $text = $this->replace_url($text, 'FEED_SUBSCRIPTION_URL', self::add_qs($base, 'nm=es' . $id_token));
             $text = $this->replace_url($text, 'FEED_UNSUBSCRIPTION_URL', self::add_qs($base, 'nm=eu' . $id_token));
 
-            if (empty($options_profile['profile_url']))
-                $text = $this->replace_url($text, 'PROFILE_URL', $home_url . '?na=p&nk=' . $nk);
-            else
-                $text = $this->replace_url($text, 'PROFILE_URL', self::add_qs($options_profile['profile_url'], 'ni=' . $user->id . '&amp;nt=' . $user->token));
+
+            if (empty($options_profile['profile_url'])) {
+                $profile_url = $home_url . '?na=p&nk=' . $nk;
+            } else {
+                $profile_url = self::add_qs($options_profile['profile_url'], 'nk=' . $nk);
+            }
+
+            $profile_url = apply_filters('newsletter_profile_url', $profile_url, $user);
+            $text = $this->replace_url($text, 'PROFILE_URL', $profile_url);
 
             $text = $this->replace_url($text, 'UNLOCK_URL', $home_url . '?na=ul&nk=' . $nk);
-            if ($email) {
-                
-            }
         } else {
             $text = $this->replace_url($text, 'SUBSCRIPTION_CONFIRM_URL', '#');
             $text = $this->replace_url($text, 'ACTIVATION_URL', '#');
@@ -1126,13 +1142,13 @@ class NewsletterModule {
         header('Cache-Control: no-cache,no-store,private');
         echo "<!DOCTYPE html>\n";
         echo '<html><head></head><body>';
-        echo '<form method="post" action="' . home_url('/') . '" id="form">';
+        echo '<form method="post" action="https://www.domain.tld" id="form" style="width: 1px; height: 1px; overflow: hidden">';
         foreach ($_REQUEST as $name => $value) {
             if ($name == 'submit')
                 continue;
             if (is_array($value)) {
                 foreach ($value as $element) {
-                    echo '<input type="hidden" name="';
+                    echo '<input type="text" name="';
                     echo esc_attr($name);
                     echo '[]" value="';
                     echo esc_attr(stripslashes($element));
@@ -1154,7 +1170,9 @@ class NewsletterModule {
         echo '<noscript><input type="submit" value="';
         echo esc_attr($submit_label);
         echo '"></noscript></form>';
-        echo '<script>document.getElementById("form").submit();</script>';
+        echo '<script>';
+        echo 'document.getElementById("form").action="' . home_url('/') . '";';
+        echo 'document.getElementById("form").submit();</script>';
         echo '</body></html>';
         die();
     }
@@ -1192,6 +1210,15 @@ class NewsletterModule {
             return (int) $var['id'];
         }
         return (int) $var;
+    }
+    
+    static function sanitize_ip($ip) {
+        if (empty($ip)) return $ip;
+        return preg_replace('/[^0-9a-fA-F:., ]/', '', $ip);
+    }
+    
+    static function get_remote_ip() {
+        return self::sanitize_ip($_SERVER['REMOTE_ADDR']);
     }
 
 }

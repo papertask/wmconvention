@@ -274,7 +274,10 @@ if (empty($controls->data['page'])) {
                                     30 => '30 ' . __('seconds', 'newsletter'),
                                     60 => '1 ' . __('minute', 'newsletter'),
                                     120 => '2 ' . __('minutes', 'newsletter'),
-                                    300 => '5 ' . __('minutes', 'newsletter')
+                                    300 => '5 ' . __('minutes', 'newsletter'),
+                                    600 => '10 ' . __('minutes', 'newsletter'),
+                                    900 => '15 ' . __('minutes', 'newsletter'),
+                                    1800 => '30 ' . __('minutes', 'newsletter')
                                 ));
                                 ?>
                                 <?php $controls->help('https://www.thenewsletterplugin.com/documentation/antiflood') ?>
@@ -323,7 +326,7 @@ if (empty($controls->data['page'])) {
                         </tr>
 
                         <tr>
-                            <th><?php _e ('Alternative activation page', 'newsletter'); ?></th>
+                            <th><?php _e('Alternative activation page', 'newsletter'); ?></th>
                             <td>
                                 <?php $controls->text('confirmation_url', 70, 'https://...'); ?>
                             </td>

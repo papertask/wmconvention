@@ -149,6 +149,9 @@ This section describes how to install the plugin and get it working.
 
 == Changelog ==
 
+= 4.0.3 =
+* Fix: Removed unused file.
+
 = 4.0.2 =
 * Fix: call_user_func_array is resolved.
 

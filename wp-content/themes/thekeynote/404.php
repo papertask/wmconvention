@@ -29,3 +29,9 @@ get_header(); ?>
 	</div>
 
 <?php get_footer(); ?>
+
+
+<? if (is_404()) { ?>  _gaq.push(['_trackEvent', '404',
+document.location.pathname + document.location.search,
+document.referrer, 0, true]);
+<? } ?>

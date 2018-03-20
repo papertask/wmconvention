@@ -271,7 +271,6 @@
 					'class.validation.php',
 					'class.database.php',
 					'class.importer.php',
-					'class.wp-auto-plugin-update.php',
 					'class.plugin-overview.php',
 				);
 

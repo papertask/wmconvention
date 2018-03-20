@@ -64,10 +64,10 @@ class NewsletterStatistics extends NewsletterModule {
 
             $parts = parse_url($url);
 
-            $verified = $parts['host'] == $_SERVER['HTTP_HOST'];
-            if (!$verified) {
+            //$verified = $parts['host'] == $_SERVER['HTTP_HOST'];
+            //if (!$verified) {
                 $verified = $signature == md5($email_id . ';' . $user_id . ';' . $url . ';' . $anchor . $this->options['key']);
-            }
+            //}
 
             if (!$verified) {
                 header("HTTP/1.0 404 Not Found");
@@ -94,19 +94,33 @@ class NewsletterStatistics extends NewsletterModule {
 
             setcookie('newsletter', $user->id . '-' . $user->token, time() + 60 * 60 * 24 * 365, '/');
 
-            $ip = preg_replace('/[^0-9a-fA-F:., ]/', '', $_SERVER['REMOTE_ADDR']);
+            $is_action = strpos($url, '?na=');
 
-            $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
-                'email_id' => $email_id,
-                'user_id' => $user_id,
-                'url' => $url,
-                'ip' => $ip
-                    )
-            );
+            $ip = $this->get_remote_ip();
+
+            if (!$is_action) {
+                $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
+                    'email_id' => $email_id,
+                    'user_id' => $user_id,
+                    'url' => $url,
+                    'ip' => $ip
+                        )
+                );
+            } else {
+                $this->logger->debug('Is an action');
+                // Uhm...
+//                if (!strpos($url, 'nk=')) {
+//                    $url = $this->add_qs($url, 'nk=' . $user->id . '-' . $user->token, false);
+//                }
+//                if (!strpos($url, 'nek=')) {
+//                    $url = $this->add_qs($url, 'nek=' . $email->id . '-' . $email->token, false);
+//                }
+            }
 
             $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=2, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
 
-            header('Location: ' . apply_filters('newsletter_redirect_url', $url, $email, $user));
+            wp_safe_redirect(apply_filters('newsletter_redirect_url', $url, $email, $user));
+            
             die();
         }
 
@@ -139,6 +153,8 @@ class NewsletterStatistics extends NewsletterModule {
                 $this->logger->info('Email with no token hence not signature to check');
             }
 
+            $ip = $this->get_remote_ip();
+
             $row = $wpdb->get_row($wpdb->prepare("select * from " . NEWSLETTER_STATS_TABLE . " where email_id=%d and user_id=%d and url='' limit 1", $email->id, $user->id));
             if ($row) {
                 $this->logger->info('Open already registered');
@@ -148,7 +164,7 @@ class NewsletterStatistics extends NewsletterModule {
                 $res = $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
                     'email_id' => (int) $email_id,
                     'user_id' => (int) $user_id,
-                    'ip' => $_SERVER['REMOTE_ADDR'])
+                    'ip' => $ip)
                 );
                 if (!$res) {
                     $this->logger->fatal($wpdb->last_error);
@@ -221,10 +237,9 @@ class NewsletterStatistics extends NewsletterModule {
             return $matches[0];
         }
 
-        if (strpos($href, '?na=') !== false) {
-            return $matches[0];
-        }
-
+//        if (strpos($href, '?na=') !== false) {
+//            return $matches[0];
+//        }
         // Do not relink anchors
         if (substr($href, 0, 1) == '#') {
             return $matches[0];
@@ -320,6 +335,20 @@ class NewsletterStatistics extends NewsletterModule {
     function get_error_count($email_id) {
         global $wpdb;
         return (int) $wpdb->get_var($wpdb->prepare("select count(*) from " . NEWSLETTER_SENT_TABLE . " where status>0 and email_id=%d", $this->to_int_id($email_id)));
+    }
+
+    function add_click($url, $user_id, $email_id, $ip = null) {
+        global $wpdb;
+        if (is_null($ip)) {
+            $ip = preg_replace('/[^0-9a-fA-F:., ]/', '', $_SERVER['REMOTE_ADDR']);
+        }
+        $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
+            'email_id' => $user_id,
+            'user_id' => $email_id,
+            'url' => $url,
+            'ip' => $ip
+                )
+        );
     }
 
 }

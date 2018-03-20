@@ -935,7 +935,12 @@ class NewsletterControls {
     }
 
     function color($name) {
-        echo $this->text($name, 10);
+        
+        $value = $this->get_value($name);
+        echo '<input id="options-', esc_attr($name), '" class="tnp-controls-color" name="options[' . $name . ']" type="text" size="' . $size . '" value="';
+        echo esc_attr($value);
+        echo '">';
+       
     }
 
     /** Creates a set of checkbox named $name_[category id] (so they are posted with distinct names).
@@ -1181,6 +1186,7 @@ class NewsletterControls {
         }
         echo '<script type="text/javascript">
     jQuery(document).ready(function(){
+    $(".tnp-controls-color").wpColorPicker();
         jQuery("textarea.dynamic").focus(function() {
             jQuery("textarea.dynamic").css("height", "50px");
             jQuery(this).css("height", "400px");

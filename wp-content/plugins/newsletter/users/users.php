@@ -90,7 +90,7 @@ class NewsletterUsers extends NewsletterModule {
         $sql .= "PRIMARY KEY (`id`),\nUNIQUE KEY `email` (`email`),\nKEY `wp_user_id` (`wp_user_id`)\n) $charset_collate;";
 
         dbDelta($sql);
-        $this->upgrade_query("alter table " . NEWSLETTER_USERS_TABLE . " convert to character set $charset_collate");
+
     }
 
     function admin_menu() {

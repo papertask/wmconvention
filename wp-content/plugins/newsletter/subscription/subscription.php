@@ -84,6 +84,40 @@ class NewsletterSubscription extends NewsletterModule {
         global $newsletter, $wpdb;
 
         switch ($newsletter->action) {
+            case 'profile-change':
+                if ($this->antibot_form_check()) {
+                    $user = $this->get_user_from_request();
+                    if (!$user || $user->status != 'C') {
+                        die('Subscriber not found or not active.');
+                    }
+                    
+                    $email = $this->get_email_from_request();
+                    if (!$email) {
+                        die('Newsletter not found');
+                    }
+
+                    if (isset($_REQUEST['list'])) {
+                        $list_id = (int) $_REQUEST['list'];
+
+                        // Check if the list is public
+                        $list = $this->get_list($list_id);
+                        if (!$list || $list['status'] == 0) {
+                            die('Private list.');
+                        }
+                        
+                        $url = $_REQUEST['redirect'];
+                        
+                        $this->set_user_list($user, $list_id, $_REQUEST['value']);
+                        NewsletterStatistics::instance()->add_click(wp_sanitize_redirect($url), $user->id, $email->id);
+                        wp_safe_redirect($url);
+                        die();
+                    }
+                } else {
+                    $this->request_to_antibot_form('Continue');
+                }
+
+                die();
+
             case 'm':
                 include dirname(__FILE__) . '/page.php';
                 die();
@@ -780,7 +814,7 @@ class NewsletterSubscription extends NewsletterModule {
         }
 
         if ($email) {
-            $params .= '&nek=' . $email->id;
+            $params .= '&nek=' . $email->id . '-' . $email->token;
         }
 
         // Add exceptions for "profile" key.
@@ -1128,7 +1162,7 @@ class NewsletterSubscription extends NewsletterModule {
             $buffer .= '<input type="checkbox" name="ny" required class="tnp-privacy" id="tnp-privacy"> ';
             $buffer .= '<label for="tnp-privacy">';
             if (!empty($attrs['url'])) {
-                $buffer .= '<a target="_blank" href="' . esc_attr($options_profile['privacy_url']) . '">';
+                $buffer .= '<a target="_blank" href="' . esc_attr($attrs['url']) . '">';
             }
             $buffer .= $attrs['label'];
             if (!empty($attrs['url'])) {

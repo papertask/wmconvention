@@ -199,7 +199,7 @@
                                 //serialize the array
                                 var serialize_data = JSON.stringify( convArrToObj(mySortable));
                                                                                             
-                                jQuery.post( ajaxurl, { action:'update-taxonomy-order', order: serialize_data }, function() {
+                                jQuery.post( ajaxurl, { action:'update-taxonomy-order', order: serialize_data, nonce : '<?php echo wp_create_nonce( 'update-taxonomy-order' ); ?>' }, function() {
                                     jQuery("#ajax-response").html('<div class="message updated fade"><p><?php _e( "Items Order Updated", 'taxonomy-terms-order' ) ?></p></div>');
                                     jQuery("#ajax-response div").delay(3000).hide("slow");
                                 });
