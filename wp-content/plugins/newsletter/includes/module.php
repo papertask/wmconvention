@@ -1132,17 +1132,45 @@ class NewsletterModule {
         return $text;
     }
 
-    public static function antibot_form_check() {
-        return strtolower($_SERVER['REQUEST_METHOD']) == 'post' && isset($_POST['ts']) && time() - $_POST['ts'] < 30;
+    public static function antibot_form_check($captcha = false) {
+        if (strtolower($_SERVER['REQUEST_METHOD']) != 'post') return false;
+        
+        if (!isset($_POST['ts']) || time() - $_POST['ts'] > 60) {
+            return false;
+        }
+        if ($captcha) {
+            $n1 = (int) $_POST['n1'];
+            if (empty($n1)) {
+                return false;
+            }
+            $n2 = (int) $_POST['n2'];
+            if (empty($n2)) {
+                return false;
+            }
+            $n3 = (int) $_POST['n3'];
+            if ($n1 + $n2 != $n3) {
+                return false;
+            }
+        }
+        
+        return true;
     }
 
-    public static function request_to_antibot_form($submit_label = 'Continue...') {
+    public static function request_to_antibot_form($submit_label = 'Continue...', $captcha = false) {
         header('Content-Type: text/html;charset=UTF-8');
         header('X-Robots-Tag: noindex,nofollow,noarchive');
         header('Cache-Control: no-cache,no-store,private');
         echo "<!DOCTYPE html>\n";
-        echo '<html><head></head><body>';
-        echo '<form method="post" action="https://www.domain.tld" id="form" style="width: 1px; height: 1px; overflow: hidden">';
+        echo '<html><head>'
+        . '<style type="text/css">'
+        . 'form {margin: 200px auto 0 auto !important; width: 350px !important; padding: 10px !important; font-family: "Open Sans", sans-serif; background: #ECF0F1; border-radius: 5px; padding: 50px !important; border: none !important;}'
+        . 'p {text-align: center; padding: 10px; color: #7F8C8D;}'
+        . 'input[type=text] {width: 50px; padding: 10px 10px; border: none; border-radius: 2px; margin: 0px 5px;}'
+        . 'input[type=submit] {text-align: center; border: none; padding: 10px 15px; font-family: "Open Sans", sans-serif; background-color: #27AE60; color: white; cursor: pointer;}'
+        . '</style>'
+        . '</head><body>';
+        echo '<form method="post" action="https://www.domain.tld" id="form">';
+        echo '<div style="width: 1px; height: 1px; overflow: hidden">';
         foreach ($_REQUEST as $name => $value) {
             if ($name == 'submit')
                 continue;
@@ -1167,12 +1195,25 @@ class NewsletterModule {
             echo '<input type="hidden" name="nhr" value="' . esc_attr($_SERVER['HTTP_REFERER']) . '">';
         }
         echo '<input type="hidden" name="ts" value="' . time() . '">';
+        echo '</div>';
+        if ($captcha) {
+            echo '<p>Math question</p>';
+            echo '<input type="text" name="n1" value="' . rand(1, 9) . '" readonly style="width: 50px">';
+            echo '+';
+            echo '<input type="text" name="n2" value="' . rand(1, 9) . '" readonly style="width: 50px">';
+            echo '=';
+            echo '<input type="text" name="n3" value="?" style="width: 50px">';
+            echo '&nbsp;<input type="submit" value="', esc_attr($submit_label), '">';
+        }
         echo '<noscript><input type="submit" value="';
         echo esc_attr($submit_label);
         echo '"></noscript></form>';
         echo '<script>';
         echo 'document.getElementById("form").action="' . home_url('/') . '";';
-        echo 'document.getElementById("form").submit();</script>';
+        if (!$captcha) {
+            echo 'document.getElementById("form").submit();';
+        }
+        echo '</script>';
         echo '</body></html>';
         die();
     }
@@ -1211,12 +1252,13 @@ class NewsletterModule {
         }
         return (int) $var;
     }
-    
+
     static function sanitize_ip($ip) {
-        if (empty($ip)) return $ip;
+        if (empty($ip))
+            return $ip;
         return preg_replace('/[^0-9a-fA-F:., ]/', '', $ip);
     }
-    
+
     static function get_remote_ip() {
         return self::sanitize_ip($_SERVER['REMOTE_ADDR']);
     }

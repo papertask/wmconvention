@@ -119,8 +119,7 @@ class NewsletterStatistics extends NewsletterModule {
 
             $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=2, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
 
-            wp_safe_redirect(apply_filters('newsletter_redirect_url', $url, $email, $user));
-            
+            header('Location: ' . apply_filters('newsletter_redirect_url', $url, $email, $user));
             die();
         }
 

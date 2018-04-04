@@ -814,6 +814,9 @@ class NewsletterControls {
 
     function textarea($name, $width = '100%', $height = '50') {
         $value = $this->get_value($name);
+        if (is_array($value)) {
+            $value = implode("\n", $value);
+        }
         echo '<textarea id="options-' . esc_attr($name) . '" class="dynamic" name="options[' . esc_attr($name) . ']" wrap="off" style="width:' . esc_attr($width) . ';height:' . esc_attr($height) . '">';
         echo esc_html($value);
         echo '</textarea>';
@@ -1186,7 +1189,7 @@ class NewsletterControls {
         }
         echo '<script type="text/javascript">
     jQuery(document).ready(function(){
-    $(".tnp-controls-color").wpColorPicker();
+    jQuery(".tnp-controls-color").wpColorPicker();
         jQuery("textarea.dynamic").focus(function() {
             jQuery("textarea.dynamic").css("height", "50px");
             jQuery(this).css("height", "400px");

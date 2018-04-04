@@ -23,7 +23,7 @@ class NewsletterSubscription extends NewsletterModule {
 
     function __construct() {
 
-        parent::__construct('subscription', '2.0.3');
+        parent::__construct('subscription', '2.0.4');
 
         // Must be called after the Newsletter::hook_init, since some constants are defined
         // there.
@@ -80,6 +80,19 @@ class NewsletterSubscription extends NewsletterModule {
         wp_localize_script('newsletter-subscription', 'newsletter', $data);
     }
 
+    function ip_match($ip, $range) {
+        if (strpos($range, '/')) {
+            list ($subnet, $bits) = explode('/', $range);
+            $ip = ip2long($ip);
+            $subnet = ip2long($subnet);
+            $mask = -1 << (32 - $bits);
+            $subnet &= $mask; # nb: in case the supplied subnet wasn't correctly aligned
+            return ($ip & $mask) == $subnet;
+        } else {
+            return strpos($range, $ip) === 0;
+        }
+    }
+
     function hook_wp_loaded() {
         global $newsletter, $wpdb;
 
@@ -90,7 +103,7 @@ class NewsletterSubscription extends NewsletterModule {
                     if (!$user || $user->status != 'C') {
                         die('Subscriber not found or not active.');
                     }
-                    
+
                     $email = $this->get_email_from_request();
                     if (!$email) {
                         die('Newsletter not found');
@@ -104,9 +117,9 @@ class NewsletterSubscription extends NewsletterModule {
                         if (!$list || $list['status'] == 0) {
                             die('Private list.');
                         }
-                        
+
                         $url = $_REQUEST['redirect'];
-                        
+
                         $this->set_user_list($user, $list_id, $_REQUEST['value']);
                         NewsletterStatistics::instance()->add_click(wp_sanitize_redirect($url), $user->id, $email->id);
                         wp_safe_redirect($url);
@@ -125,30 +138,126 @@ class NewsletterSubscription extends NewsletterModule {
             // normal subscription
             case 's':
             case 'subscribe':
-                // Flood check
-                if (!empty($this->options['antiflood'])) {
-                    $ip = (string) $_SERVER['REMOTE_ADDR'];
-                    $email = $this->is_email($_REQUEST['ne']);
-                    $updated = $wpdb->get_var($wpdb->prepare("select updated from " . NEWSLETTER_USERS_TABLE . " where ip=%s or email=%s order by updated desc limit 1", $ip, $email));
 
-                    if ($updated && time() - $updated < $this->options['antiflood']) {
-                        die('Too quick');
-                    }
+                $ip = $this->get_remote_ip();
+                $email = $this->normalize_email($_REQUEST['ne']);
+                $first_name = '';
+                if (isset($_REQUEST['nn'])) $first_name = $this->normalize_name($_REQUEST['nn']);
+                
+                $last_name = '';
+                if (isset($_REQUEST['ns'])) $last_name = $this->normalize_name($_REQUEST['ns']);
+                
+                $full_name = trim($first_name . ' ' . $last_name);
+                
+                $antibot_logger = new NewsletterLogger('antibot');
+
+                if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                    $antibot_logger->fatal($email . ' - ' . $ip . ' - HTTP method invalid');
+                    die('Invalid');
                 }
 
-                if (!empty($this->options['antibot_disable']) || $this->antibot_form_check()) {
-                    $user = $this->subscribe();
+                $captcha = !empty($this->options['captcha']);
 
-                    if ($user->status == 'E')
-                        $this->show_message('error', $user->id);
-                    if ($user->status == 'C')
-                        $this->show_message('confirmed', $user->id);
-                    if ($user->status == 'A')
-                        $this->show_message('already_confirmed', $user->id);
-                    if ($user->status == 'S')
-                        $this->show_message('confirmation', $user->id);
+                if (!empty($this->options['antibot_disable']) || $this->antibot_form_check($captcha)) {
+
+
+                    if (stripos($full_name, 'http://') !== false || stripos($full_name, 'https://') !== false) {
+                        $antibot_logger->fatal($email . ' - ' . $ip . ' - Name with http: ' . $full_name);
+                        header("HTTP/1.0 404 Not Found");
+                        die();
+                    }
+
+
+
+                    // Cannot check for administrator here, too early.
+                    if (true) {
+
+                        $this->logger->debug('Subscription of: ' . $email);
+//                        if ($this->options['domain_check']) {
+//                            $this->logger->debug('Domain checking');
+//                            list($local, $domain) = explode('@', $email);
+//
+//                            $hosts = array();
+//                            if (!getmxrr($domain, $hosts)) {
+//                                $antibot_logger->fatal($email . ' - ' . $ip . ' - MX check failed');
+//                                die('Blocked 0');
+//                            }
+//                        }
+
+                        if (!empty($this->options['ip_blacklist'])) {
+                            $this->logger->debug('IP blacklist check');
+                            foreach ($this->options['ip_blacklist'] as $item) {
+                                if ($this->ip_match($ip, $item)) {
+                                    $antibot_logger->fatal($email . ' - ' . $ip . ' - IP blacklisted');
+                                    header("HTTP/1.0 404 Not Found");
+                                    die();
+                                }
+                            }
+                        }
+
+                        if (!empty($this->options['address_blacklist'])) {
+                            $this->logger->debug('Address blacklist check');
+                            $rev_email = strrev($email);
+                            foreach ($this->options['address_blacklist'] as $item) {
+                                if (strpos($rev_email, strrev($item)) === 0) {
+                                    $antibot_logger->fatal($email . ' - ' . $ip . ' - Address blacklisted');
+                                    header("HTTP/1.0 404 Not Found");
+                                    die();
+                                }
+                            }
+                        }
+
+                        // Akismet check
+                        if (!empty($this->options['akismet']) && class_exists('Akismet')) {
+                            $this->logger->debug('Akismet check');
+                            $request = 'blog=' . urlencode(home_url()) . '&referrer=' . urlencode($_SERVER['HTTP_REFERER']) .
+                                    '&user_agent=' . urlencode($_SERVER['HTTP_USER_AGENT']) .
+                                    '&comment_type=signup' .
+                                    '&comment_author_email=' . urlencode($email) .
+                                    '&user_ip=' . urlencode($_SERVER['REMOTE_ADDR']);
+                            if (!empty($full_name)) {
+                                $request .= '&comment_author=' . urlencode($full_name);
+                            }
+
+                            $response = Akismet::http_post($request, 'comment-check');
+
+                            if ($response && $response[1] == 'true') {
+                                $antibot_logger->fatal($email . ' - ' . $ip . ' - Akismet blocked');
+                                header("HTTP/1.0 404 Not Found");
+                                die();
+                            }
+                        }
+
+                        // Flood check
+                        if (!empty($this->options['antiflood'])) {
+                            $this->logger->debug('Antiflood check');
+                            $email = $this->is_email($_REQUEST['ne']);
+                            $updated = $wpdb->get_var($wpdb->prepare("select updated from " . NEWSLETTER_USERS_TABLE . " where ip=%s or email=%s order by updated desc limit 1", $ip, $email));
+
+                            if ($updated && time() - $updated < $this->options['antiflood']) {
+                                $antibot_logger->fatal($email . ' - ' . $ip . ' - Antiflood triggered');
+                                header("HTTP/1.0 404 Not Found");
+                                die('Too quick');
+                            }
+                        }
+
+                        $user = $this->subscribe();
+
+                        if ($user->status == 'E')
+                            $this->show_message('error', $user->id);
+                        if ($user->status == 'C')
+                            $this->show_message('confirmed', $user->id);
+                        if ($user->status == 'A')
+                            $this->show_message('already_confirmed', $user->id);
+                        if ($user->status == 'S')
+                            $this->show_message('confirmation', $user->id);
+                    }
                 } else {
-                    $this->request_to_antibot_form('Subscribe');
+                    // Temporary store data
+                    //$data_key =  wp_generate_password(16, false, false);
+                    //set_transient('newsletter_' . $data_key, $_REQUEST, 60);
+                    //$this->antibot_redirect($data_key);
+                    $this->request_to_antibot_form('Subscribe', $captcha);
                 }
                 die();
 
@@ -299,6 +408,7 @@ class NewsletterSubscription extends NewsletterModule {
 
     function admin_menu() {
         $this->add_menu_page('options', 'List building');
+        $this->add_menu_page('antibot', 'Security');
         $this->add_admin_page('profile', 'Subscription Form');
         $this->add_admin_page('forms', 'Forms');
         $this->add_admin_page('lists', 'Lists');

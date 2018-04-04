@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
 Tested up to: 4.9.4
-Stable tag: 5.2.7
+Stable tag: 5.3.2
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -14,6 +14,7 @@ send and track e-mails, headache-free. It just works out of box!
 
 = Main Features =
 
+* Subscription spam check with domain/ip black lists, Akismet, captcha
 * **Responsive email Drag & Drop composer**
 * **Unlimited subscribers** with statistics 
 * **Unlimited newsletter** with tracking
@@ -88,7 +89,30 @@ Thank you, The Newsletter Team
 
 == Changelog ==
 
-= NEXT =
+= 5.3.2 =
+
+* Security panel reorganized
+* Added Akismet spam check 
+
+= 5.3.1 = 
+
+* Name and last name check for spam
+* 404 responses on error condition
+* jQuery fix
+* Email cleanup on admin edit panel
+* Name check for spam on subscription
+
+= 5.3.0 =
+
+* CAPTCHA system
+* IP black list
+* Email address black list
+
+= 5.2.8 =
+
+* Redirect fix
+
+= 5.2.7 =
 
 * Improved block layout
 * Added filter on profile url

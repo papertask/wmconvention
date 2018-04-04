@@ -14,6 +14,11 @@ $options = array();
 
 $options['noconfirmation'] = 0;
 $options['antiflood'] = 10;
+$options['ip_blacklist'] = array();
+$options['address_blacklist'] = array();
+$options['domain_check'] = 0;
+$options['akismet'] = 0;
+$options['captcha'] = 0;
 $options['notify_email'] = get_option('admin_email');
 
 // Profile page

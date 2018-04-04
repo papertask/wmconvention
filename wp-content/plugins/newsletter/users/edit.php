@@ -13,7 +13,10 @@ if ($controls->is_action('save')) {
     $email = $module->normalize_email($controls->data['email']);
     if (empty($email)) {
         $controls->errors = __('Wrong email address', 'newsletter');
+    } else {
+        $controls->data['email'] = $email;    
     }
+    
 
     if (empty($controls->errors)) {
         $user = $module->get_user($controls->data['email']);

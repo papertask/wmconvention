@@ -24,10 +24,10 @@ define('WP_CACHE', true); // Added by WP Rocket
 define('DB_NAME', 'wmconvention');
 
 /** MySQL数据库用户名 */
-define('DB_USER', 'root');
+define('DB_USER', 'wmc');
 
 /** MySQL数据库密码 */
-define('DB_PASSWORD', 'Liuyuhan2016!@#');
+define('DB_PASSWORD', 'Novo2^ReniZanx');
 
 /** MySQL主机 */
 define('DB_HOST', 'localhost');
@@ -95,3 +95,6 @@ if ( !defined('ABSPATH') )
 
 /** 设置WordPress变量和包含文件。 */
 require_once(ABSPATH . 'wp-settings.php');
+
+/** 禁用自动版本检查 */
+define("OTGS_DISABLE_AUTO_UPDATES", true);
