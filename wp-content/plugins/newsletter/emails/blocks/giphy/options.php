@@ -15,13 +15,19 @@
     <tr>
         <th><?php _e('Choose', 'newsletter') ?></th>
         <td>
-            <div style="clear: both" id="tnp-giphy-results"></div>
+            <div style="clear: both" id="tnp-giphy-results">Write something in the search above</div>
         </td>
     </tr>
     <tr>
         <th><?php _e('Selected', 'newsletter') ?></th>
         <td>
             <?php $controls->text('giphy_url') ?>
+        </td>
+    </tr>
+    <tr>
+        <th>&nbsp;</th>
+        <td>
+            <div id="giphy-preview"></div>
         </td>
     </tr>
 </table>
@@ -31,6 +37,7 @@
     function choose_gif(url) {
         jQuery("#tnp-giphy-results").html("");
         jQuery("#options-giphy_url").val(url);
+        jQuery("#giphy-preview").html('<img src="' + url + '" />');
     }
 
     jQuery("#options-q").keyup(

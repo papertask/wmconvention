@@ -84,8 +84,17 @@
 						<?php
 							if(empty($theme_option['logo-id'])){
 								echo gdlr_get_image(GDLR_PATH . '/images/logo.png');
-							}else{
-								echo gdlr_get_image($theme_option['logo-id']);
+							}else{								
+//Multi language logo
+//								echo gdlr_get_image($theme_option['logo-id']);
+if(ICL_LANGUAGE_CODE=='en'){
+    echo gdlr_get_image($theme_option['logo-id']);
+}
+else if(ICL_LANGUAGE_CODE=='zh-hans'){
+    echo gdlr_get_image($theme_option['logo-id']);
+//echo '<img src="http://accesspath.com/wp-content/uploads/2018/02/AccessPath-logo-new.gif" alt="">';
+}
+
 							}
 						?>
 					</a>

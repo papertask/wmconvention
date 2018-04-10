@@ -5,6 +5,7 @@
 	*	This file contains the script to includes necessary function to the theme
 	*	---------------------------------------------------------------------
 	*/
+
 	
 	// include the shortcode support for the text widget
 	add_filter('widget_text', 'do_shortcode');

@@ -220,6 +220,25 @@ class TNP {
 
         return $user;
     }
+    
+    /*
+     * Subscribers list
+     */
+
+    public static function subscribers($params) {
+
+        global $wpdb;
+        $newsletter = Newsletter::instance();
+        
+        $items_per_page = 20;
+        $where = "";
+        
+        $query = "select name, email from " . NEWSLETTER_USERS_TABLE . ' ' . $where . " order by id desc";
+        $query .= " limit 0," . $items_per_page;
+        $list = $wpdb->get_results($query);
+
+        return $list;
+    }
 
     /*
      * Deletes a subscriber
@@ -242,6 +261,29 @@ class TNP {
             $newsletter->logger->debug($wpdb->last_query);
             return new WP_Error('-1', $wpdb->last_error, array('status' => 400));
         }
+    }
+    
+    /*
+     * Newsletters list
+     */
+
+    public static function newsletters($params) {
+
+        global $wpdb;
+        
+        $list = $wpdb->get_results("SELECT id, subject, created, status, total, sent, send_on FROM " . NEWSLETTER_EMAILS_TABLE . " ORDER BY id DESC LIMIT 10", OBJECT);
+        
+        if ($wpdb->last_error) {
+            $this->logger->error($wpdb->last_error);
+            return false;
+        }
+        
+        if (empty($list)) {
+            return array();
+        }
+        
+        return $list;
+        
     }
 
 }

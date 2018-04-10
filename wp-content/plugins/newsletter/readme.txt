@@ -1,8 +1,8 @@
 === Newsletter ===
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
-Tested up to: 4.9.4
-Stable tag: 5.3.2
+Tested up to: 4.9.5
+Stable tag: 5.3.3
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -88,6 +88,12 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.3.3 =
+
+* Added GIPHY composer block
+* Added raw HTML composer block
+* API: Newsletters and subscribers lists
 
 = 5.3.2 =
 

@@ -404,7 +404,12 @@ jQuery(function () {
     });
 
     jQuery("#tnpc-block-options .tnpc-edit-box-buttons-save").click(function () {
-        //alert(target.data('options'));
+        
+        // fix for Codemirror
+        if (typeof templateEditor !== 'undefined') { templateEditor.save(); };
+        
+//        console.log(target.data('options'));
+        
         jQuery(this).parent().parent().parent().fadeOut(500)
         jQuery(this).parent().parent().slideUp(500)
 
