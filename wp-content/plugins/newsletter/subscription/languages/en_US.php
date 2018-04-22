@@ -12,7 +12,7 @@
 
 $options = array();
 
-$options['noconfirmation'] = 0;
+$options['noconfirmation'] = 1;
 $options['antiflood'] = 10;
 $options['ip_blacklist'] = array();
 $options['address_blacklist'] = array();

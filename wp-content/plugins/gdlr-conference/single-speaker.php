@@ -70,25 +70,25 @@
 									if( $query->have_posts() ){
 										$count = 0;
 									
-										echo '<h4 class="gdlr-speaker-session-title">';
-										echo sprintf(__('All sessions by %s', 'gdlr-conference'), get_the_title());
-										echo '</h4>';
+//										echo '<h4 class="gdlr-speaker-session-title">';
+//										echo sprintf(__('All sessions by %s', 'gdlr-conference'), get_the_title());
+//										echo '</h4>';
 										
-										echo '<div class="gdlr-speaker-session-wrapper" >';
-										while($query->have_posts()){ $query->the_post(); $count++;
-											echo ($count % 2 == 1 && $count != 1)? '<div class="clear"></div>': '';
+//										echo '<div class="gdlr-speaker-session-wrapper" >';
+//										while($query->have_posts()){ $query->the_post(); $count++;
+//											echo ($count % 2 == 1 && $count != 1)? '<div class="clear"></div>': '';
 										
-											$gdlr_post_option = gdlr_decode_preventslashes(get_post_meta(get_the_ID(), 'post-option', true));
-											$gdlr_post_option = json_decode($gdlr_post_option, true);
+//											$gdlr_post_option = gdlr_decode_preventslashes(get_post_meta(get_the_ID(), 'post-option', true));
+//											$gdlr_post_option = json_decode($gdlr_post_option, true);
 										
-											echo '<div class="six columns">';
-											echo '<div class="gdlr-speaker-session-item gdlr-item" >';
-											echo '<h4 class="speaker-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h4>';
-											echo gdlr_get_session_info(array('date', 'time', 'location'), $gdlr_post_option); 
-											echo '</div>';
-											echo '</div>';
-										}
-										echo '<div class="clear"></div>';
+//											echo '<div class="six columns">';
+//											echo '<div class="gdlr-speaker-session-item gdlr-item" >';
+//											echo '<h4 class="speaker-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h4>';
+//											echo gdlr_get_session_info(array('date', 'time', 'location'), $gdlr_post_option); 
+//											echo '</div>';
+//											echo '</div>';
+//										}
+										echo '<div class="clear"></div>'; 
 										echo '</div>';
 										wp_reset_postdata();
 									}

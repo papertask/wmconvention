@@ -282,7 +282,8 @@
 				echo '</div>';
 				
 				echo '<div class="gdlr-session-item-content" >';
-				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+//				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+				echo '<h3 class="gdlr-session-item-title">' . get_the_title() . '</h3>';
 				echo '<div class="gdlr-session-item-excerpt">' . get_the_excerpt() . '</div>';
 				
 				if( !empty($gdlr_speakers) ){
@@ -370,7 +371,8 @@
 				echo '</div>';
 				
 				echo '<div class="gdlr-session-item-content" >';
-				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+//				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+				echo '<h3 class="gdlr-session-item-title">' . get_the_title() . '</h3>';
 				echo '<div class="gdlr-session-item-excerpt">' . get_the_excerpt() . '</div>';
 				
 				if( !empty($gdlr_speakers) ){
@@ -464,7 +466,8 @@
 				}			
 				
 				echo '<div class="gdlr-session-item-content-inner" >';
-				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+//				echo '<h3 class="gdlr-session-item-title"><a href="' . get_permalink() . '">' . get_the_title() . '</a></h3>'; 
+				echo '<h3 class="gdlr-session-item-title">' . get_the_title() . '</h3>';
 				echo '<div class="gdlr-session-item-content-info">';
 				echo gdlr_get_session_info(array('time', 'location', 'speaker'), $gdlr_post_option, $gdlr_speakers); 
 				echo '</div>'; // session-item-content-info		 

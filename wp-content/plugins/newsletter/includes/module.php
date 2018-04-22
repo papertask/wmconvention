@@ -162,8 +162,9 @@ class NewsletterModule {
      */
     function get_options($sub = '') {
         $options = get_option($this->get_prefix($sub), array());
-        if (!is_array($options))
+        if (!is_array($options)) {
             return array();
+        }
         return $options;
     }
 
@@ -668,7 +669,13 @@ class NewsletterModule {
     }
 
     function delete_email($id) {
-        return $this->store->delete(NEWSLETTER_EMAILS_TABLE, $id);
+        global $wpdb;
+        $r = $this->store->delete(NEWSLETTER_EMAILS_TABLE, $id);
+        if ($r !== false) {
+            $wpdb->delete(NEWSLETTER_STATS_TABLE, array('email_id' => $id));
+            $wpdb->delete(NEWSLETTER_SENT_TABLE, array('email_id' => $id));
+        }
+        return $r;
     }
 
     function get_email_field($id, $field_name) {
@@ -891,8 +898,39 @@ class NewsletterModule {
         $r = $this->store->delete(NEWSLETTER_USERS_TABLE, $id);
         if ($r !== false) {
             $wpdb->delete(NEWSLETTER_STATS_TABLE, array('user_id' => $id));
+            $wpdb->delete(NEWSLETTER_SENT_TABLE, array('user_id' => $id));
         }
     }
+    
+    function anonymize_ip($ip) {
+        if (empty($ip)) return $ip;
+        $parts = explode('.', $ip);
+        array_pop($parts);
+        return implode('.', $parts);
+    }
+    
+    function anonymize_user($id) {
+        global $wpdb;
+        $user = $this->get_user($id);
+        if (!$user) return null;
+        
+        $user->name = '';
+        $user->surname = '';
+        $user->ip = $this->anonymize_ip($user->ip);
+        
+        for ($i=1; $i<=NEWSLETTER_PROFILE_MAX; $i++) {
+            $field = 'profile_' . $i;
+            $user->$field = '';
+        }
+        
+        // [TODO] Status?
+        $user->status = 'U';
+        $user->email = $user->id . '@anonymi.zed';
+        
+        $user = $this->save_user($user);
+        
+        return $user;
+    }    
 
     /**
      *
@@ -1118,6 +1156,8 @@ class NewsletterModule {
     function replace_url($text, $tag, $url) {
         $home = trailingslashit(home_url());
         $tag_lower = strtolower($tag);
+        $text = str_replace('http://{' . $tag_lower . '}', $url, $text);
+        $text = str_replace('https://{' . $tag_lower . '}', $url, $text);
         $text = str_replace($home . '{' . $tag_lower . '}', $url, $text);
         $text = str_replace($home . '%7B' . $tag_lower . '%7D', $url, $text);
         $text = str_replace('{' . $tag_lower . '}', $url, $text);
@@ -1255,7 +1295,7 @@ class NewsletterModule {
 
     static function sanitize_ip($ip) {
         if (empty($ip))
-            return $ip;
+            return '';
         return preg_replace('/[^0-9a-fA-F:., ]/', '', $ip);
     }
 

@@ -5,7 +5,7 @@ Plugin URI: http://www.flippercode.com/
 Description: A Responsive Google Maps plugin to display custom markers on the google maps. Show custom message with links on a marker click.
 Author: flippercode
 Author URI: http://www.flippercode.com/
-Version: 4.0.3
+Version: 4.0.4
 Text Domain: wp-google-map-plugin
 Domain Path: /lang/
 */
@@ -644,7 +644,7 @@ if ( ! class_exists( 'FC_Google_Maps_Lite' ) ) {
 			}
 
 			if ( ! defined( 'WPGMP_VERSION' ) ) {
-				define( 'WPGMP_VERSION', '4.0.3' );
+				define( 'WPGMP_VERSION', '4.0.4' );
 			}
 
 			if ( ! defined( 'WPGMP_TEXT_DOMAIN' ) ) {

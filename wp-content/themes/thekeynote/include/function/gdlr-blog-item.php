@@ -117,11 +117,12 @@
 				switch( $post_info ){
 					case 'date':
 						$ret .= '<div class="blog-info blog-date">';
-						$ret .= '<a href="' . get_day_link( get_the_time('Y'), get_the_time('m'), get_the_time('d')) . '">';
+						//$ret .= '<a href="' . get_day_link( get_the_time('Y'), get_the_time('m'), get_the_time('d')) . '">';
 						//$ret .= '<time date-time="' . get_the_time('Y-m-d') . '" pubdate>';
-						$ret .= get_the_time($theme_option['date-format']);
+						//$ret .= get_the_time($theme_option['date-format']);
 						//$ret .= '</time>';
-						$ret .= '</a>';
+						$ret .= get_the_date( '', $recent_post->ID ); 
+						//$ret .= '</a>';
 						$ret .= '</div>';
 						break;
 					case 'tag':

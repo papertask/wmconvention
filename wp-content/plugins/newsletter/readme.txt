@@ -2,7 +2,7 @@
 Tags: newsletter,email,subscription,mass mail,list build,email marketing,direct mailing,automation,automated
 Requires at least: 3.4.0
 Tested up to: 4.9.5
-Stable tag: 5.3.3
+Stable tag: 5.3.9
 Contributors: satollo,webagile,michael-travan
 
 Add a real newsletter system to your blog. For free. With unlimited newsletters and subscribers.
@@ -15,6 +15,7 @@ send and track e-mails, headache-free. It just works out of box!
 = Main Features =
 
 * Subscription spam check with domain/ip black lists, Akismet, captcha
+* GDPR ready 
 * **Responsive email Drag & Drop composer**
 * **Unlimited subscribers** with statistics 
 * **Unlimited newsletter** with tracking
@@ -88,6 +89,41 @@ Thank you, The Newsletter Team
 3. The Reports extension
 
 == Changelog ==
+
+= 5.3.9 =
+
+* Version number fix
+
+= 5.3.8 =
+
+* Fixed failed insert on ip null
+
+= 5.3.7 =
+
+* Fixed the newsletter deletion with clean up of log tables
+
+= 5.3.6 =
+
+* Fixed composer block background editing
+* Fixed API functions
+* Minor fixes
+
+= 5.3.5 =
+
+* Fixed error notice on profile.php
+
+= 5.3.4 =
+
+* GDPR ready
+* Maintenance option to add all subscriber without a list to a specified list
+* Dismissed the tabled subscription form
+* Fixed privacy checkbox label for field shortcode
+* Logs of lists change
+* Last activity tracking
+* Retargeting/deletion of inactive subscribers
+* Privacy checkbox without the checkbox (option)
+* Personal data export
+* Improved subscriber deletion with cleanup of log tables
 
 = 5.3.3 =
 

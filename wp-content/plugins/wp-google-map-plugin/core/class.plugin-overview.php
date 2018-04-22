@@ -158,7 +158,7 @@ if ( ! class_exists( 'Flippercode_Product_Overview' ) ) {
 		}
 
 		function renderOverviewPage() {
-			$skin = $_GET['skin'];
+			$skin = sanitize_text_field($_GET['skin']);
 			$plugin_updates = unserialize( get_option('fc_'.$this->productSlug ) );
 		
 			?>

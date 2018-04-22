@@ -119,12 +119,12 @@ class NewsletterEmails extends NewsletterModule {
             
             echo '<table border="0" cellpadding="0" cellspacing="0" align="center" width="100%" style="border-collapse: collapse; width: 100%;" class="tnpc-row" data-id="', esc_attr($block_id), "\">\n";
             echo "<tr>\n";
-            echo '<td align="center" style="padding: 0;" class="edit-block">', "\n";
+            echo '<td align="center" style="padding: 0;">', "\n";
             echo '<!--[if mso]><table border="0" cellpadding="0" align="center" cellspacing="0" width="' . $width . '"><tr><td width="' . $width . '"><![endif]-->', "\n";
 
             echo '<table border="0" cellpadding="0" align="center" cellspacing="0" width="100%" style="width: 100%!important; max-width: ', $width, 'px!important">', "\n";
             echo "<tr>\n";
-            echo '<td align="center" style="', $style, 'text-align: center;" bgcolor="', $options['block_background'], '" width="100%">', "\n";
+            echo '<td class="edit-block" align="center" style="', $style, 'text-align: center;" bgcolor="', $options['block_background'], '" width="100%">', "\n";
 
             echo $content;
             

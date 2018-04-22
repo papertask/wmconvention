@@ -47,7 +47,7 @@
 					$ret .= '<span class="gdlr-speaker-thumbnail-overlay" ></span>';
 					$ret .= '<span class="gdlr-speaker-thumbnail-overlay-icon">' . $overlay_icon . '</span>';
 				}else{
-//					$ret .= '<a class="gdlr-speaker-thumbnail-overlay-link" href="' . get_permalink((empty($post_id)? '': $post_id)) . '" >';
+					$ret .= '<a class="gdlr-speaker-thumbnail-overlay-link" href="' . get_permalink((empty($post_id)? '': $post_id)) . '" >';
 					$ret .= '<span class="gdlr-speaker-thumbnail-overlay" ></span>';
 					$ret .= '</a>';
 				}
@@ -172,8 +172,8 @@
 			echo gdlr_get_speaker_thumbnail($thumbnail_size, '', $post_options);
 			
 			echo '<div class="gdlr-speaker-item-content">';
-//			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title"><a href="' . get_permalink() . '" >' . get_the_title() . '</a></h3>';
-			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title">' . get_the_title() . '</h3>';
+			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title"><a href="' . get_permalink() . '" >' . get_the_title() . '</a></h3>';
+//			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title">' . get_the_title() . '</h3>';
 			if( !empty($post_options['page-caption']) ) {
 				echo '<div class="gdlr-speaker-item-position gdlr-info-font gdlr-skin-info" >' . $post_options['page-caption'] . '</div>';
 			}
@@ -199,7 +199,8 @@
 			echo gdlr_get_speaker_thumbnail($thumbnail_size, '', $post_options);
 			
 			echo '<div class="gdlr-speaker-item-content">';
-			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title">' . get_the_title() . '</h3>';
+			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title"><a href="' . get_permalink() . '" >' . get_the_title() . '</a></h3>';
+//			echo '<h3 class="gdlr-speaker-item-title gdlr-skin-title">' . get_the_title() . '</h3>';
 			if( !empty($post_options['page-caption']) ) {
 				echo '<div class="gdlr-speaker-item-position gdlr-info-font gdlr-skin-info" >' . $post_options['page-caption'] . '</div>';
 			}

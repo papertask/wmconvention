@@ -52,11 +52,6 @@ class NewsletterStatistics extends NewsletterModule {
             // The remaining elements are the url splitted when it contains
             $url = implode(';', $parts);
 
-            //list($email_id, $user_id, $url, $anchor, $signature) = explode(';', base64_decode($_GET['nltr']), 5);
-            //$url = esc_url_raw($url);
-            //$user_id = (int) $user_id;
-            //$email_id = (int) $email_id;
-
             if (empty($user_id) || empty($url)) {
                 header("HTTP/1.0 404 Not Found");
                 die('Invalid data');
@@ -64,10 +59,7 @@ class NewsletterStatistics extends NewsletterModule {
 
             $parts = parse_url($url);
 
-            //$verified = $parts['host'] == $_SERVER['HTTP_HOST'];
-            //if (!$verified) {
-                $verified = $signature == md5($email_id . ';' . $user_id . ';' . $url . ';' . $anchor . $this->options['key']);
-            //}
+            $verified = $signature == md5($email_id . ';' . $user_id . ';' . $url . ';' . $anchor . $this->options['key']);
 
             if (!$verified) {
                 header("HTTP/1.0 404 Not Found");
@@ -95,29 +87,24 @@ class NewsletterStatistics extends NewsletterModule {
             setcookie('newsletter', $user->id . '-' . $user->token, time() + 60 * 60 * 24 * 365, '/');
 
             $is_action = strpos($url, '?na=');
-
+            
             $ip = $this->get_remote_ip();
 
             if (!$is_action) {
-                $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
+
+                $res = $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
                     'email_id' => $email_id,
                     'user_id' => $user_id,
                     'url' => $url,
                     'ip' => $ip
                         )
                 );
+                $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=2, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
             } else {
-                $this->logger->debug('Is an action');
-                // Uhm...
-//                if (!strpos($url, 'nk=')) {
-//                    $url = $this->add_qs($url, 'nk=' . $user->id . '-' . $user->token, false);
-//                }
-//                if (!strpos($url, 'nek=')) {
-//                    $url = $this->add_qs($url, 'nek=' . $email->id . '-' . $email->token, false);
-//                }
+                $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=1, ip=%s where email_id=%d and user_id=%d and open=0 limit 1", $ip, $email_id, $user_id));
             }
 
-            $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=2, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
+            $this->update_last_activity($user);
 
             header('Location: ' . apply_filters('newsletter_redirect_url', $url, $email, $user));
             die();
@@ -154,26 +141,27 @@ class NewsletterStatistics extends NewsletterModule {
 
             $ip = $this->get_remote_ip();
 
-            $row = $wpdb->get_row($wpdb->prepare("select * from " . NEWSLETTER_STATS_TABLE . " where email_id=%d and user_id=%d and url='' limit 1", $email->id, $user->id));
-            if ($row) {
-                $this->logger->info('Open already registered');
-                // MAybe an update for some fields?
-            } else {
-                $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=1, ip=%s where email_id=%d and user_id=%d limit 1", $ip, $email_id, $user_id));
-                $res = $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
-                    'email_id' => (int) $email_id,
-                    'user_id' => (int) $user_id,
-                    'ip' => $ip)
-                );
-                if (!$res) {
-                    $this->logger->fatal($wpdb->last_error);
-                }
+            $wpdb->query($wpdb->prepare("update " . NEWSLETTER_SENT_TABLE . " set open=1, ip=%s where email_id=%d and user_id=%d and open=0 limit 1", $ip, $email_id, $user_id));
+            $res = $wpdb->insert(NEWSLETTER_STATS_TABLE, array(
+                'email_id' => (int) $email_id,
+                'user_id' => (int) $user_id,
+                'ip' => $ip)
+            );
+            if (!$res) {
+                $this->logger->fatal($wpdb->last_error);
             }
+            
+            $this->update_last_activity($user);
 
             header('Content-Type: image/gif');
             echo base64_decode('_R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7');
             die();
         }
+    }
+    
+    function update_last_activity($user) {
+        global $wpdb;
+        $wpdb->query($wpdb->prepare("update " . NEWSLETTER_USERS_TABLE . " set last_activity=%d where id=%d limit 1", time(), $user->id));
     }
 
     function upgrade() {
@@ -185,7 +173,6 @@ class NewsletterStatistics extends NewsletterModule {
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `url` varchar(255) NOT NULL DEFAULT '',
-  `newsletter` varchar(50) NOT NULL DEFAULT '',
   `anchor` varchar(200) NOT NULL DEFAULT '',
   `user_id` int(11) NOT NULL DEFAULT '0',
   `email_id` varchar(10) NOT NULL DEFAULT '0',

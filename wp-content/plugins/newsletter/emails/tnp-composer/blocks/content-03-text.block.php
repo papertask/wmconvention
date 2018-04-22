@@ -1,7 +1,6 @@
-
 <table border="0" cellpadding="0" align="center" cellspacing="0" width="100%">
     <tr>
-        <td bgcolor="#ffffff" align="center" style="padding: 20px 15px 20px 15px;">
+        <td align="center" style="padding: 20px 15px 20px 15px;">
             
             <table border="0" cellpadding="0" cellspacing="0" class="responsive-table" width="100%" style="width: 100%!important">
                 <tr>

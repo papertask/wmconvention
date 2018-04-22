@@ -5,12 +5,13 @@ if (!empty($block_options['header_logo']['url'])) {
     $logo_url = 'https://placehold.it/180x100&text=' . urlencode($block_options['header_title']);
 }
 $logo_alt = $block_options['header_title'];
+$options['block_background'] = '#333333';
 ?>
 
 
 <table border="0" cellpadding="0" align="center" cellspacing="0" width="100%">
     <tr>
-        <td bgcolor="#333333" align="center" style="padding: 0px 15px 0px 15px;">
+        <td align="center" style="padding: 0px 15px 0px 15px;">
             
                 <table border="0" cellpadding="0" cellspacing="0" width="500" class="wrapper">
                     <!-- LOGO/PREHEADER TEXT -->

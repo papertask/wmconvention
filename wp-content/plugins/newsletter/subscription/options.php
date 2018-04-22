@@ -184,8 +184,8 @@ if (empty($controls->data['page'])) {
                 <ul>
                     <li><a href="#tabs-general"><?php _e('General', 'newsletter') ?></a></li>
                     <li><a href="#tabs-2"><?php _e('Subscription', 'newsletter') ?></a></li>
-                    <li><a href="#tabs-3"><?php _e('Activation', 'newsletter') ?></a></li>
                     <li><a href="#tabs-4"><?php _e('Welcome', 'newsletter') ?></a></li>
+                    <li><a href="#tabs-3"><?php _e('Activation', 'newsletter') ?></a></li>
                     <li><a href="#tabs-9"><?php _e('Profile', 'newsletter') ?></a></li>
                 </ul>
 
