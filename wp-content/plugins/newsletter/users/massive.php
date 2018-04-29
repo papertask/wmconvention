@@ -284,11 +284,6 @@ if ($controls->is_action('bounces')) {
                                 <?php $controls->button_confirm('list_add', 'Activate for everyone', __('Are you sure?', 'newsletter')); ?>
                                 <?php $controls->button_confirm('list_remove', 'Deactivate for everyone', __('Are you sure?', 'newsletter')); ?>
                                 <?php $controls->button_confirm('list_delete', 'Delete everyone in that list', __('Are you sure?', 'newsletter')); ?>
-                                <br><br>
-                                <?php $controls->select('list_action', array('move' => 'Change', 'add' => 'Add')); ?>
-                                <?php _e('all subscribers in', 'newsletter') ?> <?php $controls->select('list_1', $lists); ?>
-                                <?php _e('to', 'newsletter') ?> <?php $controls->select('list_2', $lists); ?>
-                                <?php $controls->button_confirm('list_manage', 'Go!', 'Are you sure?'); ?>
                                 <p class="description">
                                     If you choose to <strong>delete</strong> users in a list, they will be
                                     <strong>physically deleted</strong> from the database (no way back).
@@ -298,7 +293,16 @@ if ($controls->is_action('bounces')) {
                         <tr>
                             <th>&nbsp;</th>
                             <td>
-                                <?php _e('Add to list', 'newsletter') ?>
+                                <?php $controls->select('list_action', array('move' => 'Move', 'add' => 'Add')); ?>
+                                <?php _e('all subscribers in', 'newsletter') ?> <?php $controls->select('list_1', $lists); ?>
+                                <?php _e('to', 'newsletter') ?> <?php $controls->select('list_2', $lists); ?>
+                                <?php $controls->button_confirm('list_manage', 'Go!', 'Are you sure?'); ?>   
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>&nbsp;</th>
+                            <td>
+                                <?php _e('Add to', 'newsletter') ?>
                                 <?php $controls->select('list_3', $lists) ?> <?php _e('subscribers without a list', 'newsletter') ?> <?php $controls->button_confirm('list_none', '&raquo;', __('Are you sure?', 'newsletter')); ?>
                             </td>
                         </tr>

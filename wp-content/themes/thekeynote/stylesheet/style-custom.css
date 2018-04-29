@@ -4,6 +4,9 @@ html.ltie9 body, body{ min-width: 1200px; } .container{ max-width: 1200px; } .gd
 .gdlr-logo{ margin-top: 20px; }
 .gdlr-logo{ margin-bottom: 30px; }
 .gdlr-navigation-wrapper{ margin-top: 53px; }.gdlr-menu-search-button-sep, #gdlr-menu-search-button{ top: 53px; }
+.gdlr-page-title-wrapper { background-image: url('http://wmconvention.org/wp-content/uploads/2018/04/background-1.jpg'); }
+body.single .gdlr-page-title-wrapper { background-image: url('http://wmconvention.org/wp-content/uploads/2018/04/background-1.jpg'); }
+body.single-portfolio .gdlr-page-title-wrapper { background-image: url('http://wmconvention.org/wp-content/uploads/2018/04/background-1.jpg'); }
 h1, h2, h3, h4, h5, h6{ font-family: "Raleway"; }
 body, input, textarea, select{ font-family: "Montserrat"; }
 .gdlr-info-font, ul.gdlr-twitter-widget .gdlr-twitter-time, .gdlr-page-caption{ font-family: "Droid Serif"; }
