@@ -21,6 +21,12 @@ jQuery(function($) {
 			this.scanningSection.section.on( 'click', '.header input:checkbox, .footer input:checkbox', {instance: this}, function (event){
 				event.data.instance.toggleCheckboxes( event.data.instance.scanningSection.section );
 			});
+
+			this.scanningSection.section.on( 'change', 'input:checkbox', {instance: this}, function(event) {
+				var checked = event.data.instance.scanningSection.section.find( '.item input:checkbox:checked' );
+				var disableScanButton = ! Boolean( checked.length );
+				$(event.data.instance.scanningSection.scanButton).prop('disabled', disableScanButton );
+			});
 		},
 
 		toggleItems: function (data, triggerElement) {

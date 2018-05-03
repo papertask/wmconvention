@@ -358,6 +358,15 @@ class WPML_Package_Helper {
 		}
 	}
 
+	/** @param int $post_id */
+	final public function remove_post_packages( $post_id ) {
+		$packages = $this->get_post_string_packages( array(), $post_id );
+
+		foreach ( $packages as $package ) {
+			$this->delete_package( $package->ID );
+		}
+	}
+
 	final protected function delete_packages( $packages_ids ) {
 		$flush_cache = false;
 
@@ -626,7 +635,7 @@ class WPML_Package_Helper {
 	 * @param null|array $packages
 	 * @param int        $post_id
 	 *
-	 * @return array
+	 * @return WPML_Package[]
 	 */
 	public function get_post_string_packages( $packages, $post_id ) {
 		global $wpdb;

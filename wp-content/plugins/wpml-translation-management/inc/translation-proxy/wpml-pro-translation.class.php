@@ -368,7 +368,10 @@ class WPML_Pro_Translation extends WPML_TM_Job_Factory_User {
 
 					return false;
 				}
+				kses_remove_filters();
 				wpml_tm_save_data( $job_xliff_translation );
+				kses_init();
+
 				$translations = $sitepress->get_element_translations( $translation_info->trid, $translation_info->element_type, false, true, true );
 				if ( isset( $translations[ $translation_info->language_code ] ) ) {
 					$translation = $translations[ $translation_info->language_code ];

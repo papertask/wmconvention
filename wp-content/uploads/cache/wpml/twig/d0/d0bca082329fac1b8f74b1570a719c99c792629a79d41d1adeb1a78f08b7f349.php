@@ -24,9 +24,11 @@ class __TwigTemplate_4fde17e0e5baebe3e7ac92c20041ea0a5400da93cdfad2f1e8e59c5995c
         // line 4
         $context["css_classes_bracket"] = twig_trim_filter(("wpml-ls-bracket " . $this->getAttribute(($context["backward_compatibility"] ?? null), "css_classes_bracket", array())));
         // line 5
+        $context["css_classes_link"] = twig_trim_filter(("wpml-ls-link " . $this->getAttribute($this->getAttribute(($context["language"] ?? null), "backward_compatibility", array()), "css_classes_a", array())));
+        // line 6
         echo "
 <div class=\"";
-        // line 6
+        // line 7
         echo twig_escape_filter($this->env, ($context["css_classes"] ?? null), "html", null, true);
         echo " wpml-ls-legacy-list-horizontal\"";
         if ($this->getAttribute(($context["backward_compatibility"] ?? null), "css_id", array())) {
@@ -36,27 +38,23 @@ class __TwigTemplate_4fde17e0e5baebe3e7ac92c20041ea0a5400da93cdfad2f1e8e59c5995c
         }
         echo ">
 \t<ul>";
-        // line 9
+        // line 10
         $context['_parent'] = $context;
         $context['_seq'] = twig_ensure_traversable(($context["languages"] ?? null));
         foreach ($context['_seq'] as $context["code"] => $context["language"]) {
-            // line 10
+            // line 11
             echo "<li class=\"";
             echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "css_classes", array()), "html", null, true);
             echo " wpml-ls-item-legacy-list-horizontal\">
 \t\t\t\t<a href=\"";
-            // line 11
-            echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "url", array()), "html", null, true);
-            echo "\"";
-            if ($this->getAttribute($this->getAttribute($context["language"], "backward_compatibility", array()), "css_classes_a", array())) {
-                echo " class=\"";
-                echo twig_escape_filter($this->env, $this->getAttribute($this->getAttribute($context["language"], "backward_compatibility", array()), "css_classes_a", array()), "html", null, true);
-                echo "\"";
-            }
-            echo ">";
             // line 12
+            echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "url", array()), "html", null, true);
+            echo "\" class=\"";
+            echo twig_escape_filter($this->env, ($context["css_classes_link"] ?? null), "html", null, true);
+            echo "\">";
+            // line 13
             if ($this->getAttribute($context["language"], "flag_url", array())) {
-                // line 13
+                // line 14
                 echo "<img class=\"";
                 echo twig_escape_filter($this->env, ($context["css_classes_flag"] ?? null), "html", null, true);
                 echo "\" src=\"";
@@ -67,58 +65,58 @@ class __TwigTemplate_4fde17e0e5baebe3e7ac92c20041ea0a5400da93cdfad2f1e8e59c5995c
                 echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "flag_title", array()), "html", null, true);
                 echo "\">";
             }
-            // line 16
+            // line 17
             if (($this->getAttribute($context["language"], "is_current", array()) && ($this->getAttribute($context["language"], "native_name", array()) || $this->getAttribute($context["language"], "display_name", array())))) {
-                // line 18
-                $context["current_language_name"] = (($this->getAttribute($context["language"], "native_name", array(), "any", true, true)) ? (_twig_default_filter($this->getAttribute($context["language"], "native_name", array()), $this->getAttribute($context["language"], "display_name", array()))) : ($this->getAttribute($context["language"], "display_name", array())));
                 // line 19
+                $context["current_language_name"] = (($this->getAttribute($context["language"], "native_name", array(), "any", true, true)) ? (_twig_default_filter($this->getAttribute($context["language"], "native_name", array()), $this->getAttribute($context["language"], "display_name", array()))) : ($this->getAttribute($context["language"], "display_name", array())));
+                // line 20
                 echo "<span class=\"";
                 echo twig_escape_filter($this->env, ($context["css_classes_native"] ?? null), "html", null, true);
                 echo "\">";
                 echo twig_escape_filter($this->env, ($context["current_language_name"] ?? null), "html", null, true);
                 echo "</span>";
             } else {
-                // line 23
+                // line 24
                 if ($this->getAttribute($context["language"], "native_name", array())) {
-                    // line 24
+                    // line 25
                     echo "<span class=\"";
                     echo twig_escape_filter($this->env, ($context["css_classes_native"] ?? null), "html", null, true);
                     echo "\">";
                     echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "native_name", array()), "html", null, true);
                     echo "</span>";
                 }
-                // line 27
+                // line 28
                 if ($this->getAttribute($context["language"], "display_name", array())) {
-                    // line 28
+                    // line 29
                     echo "<span class=\"";
                     echo twig_escape_filter($this->env, ($context["css_classes_display"] ?? null), "html", null, true);
                     echo "\">";
-                    // line 29
+                    // line 30
                     if ($this->getAttribute($context["language"], "native_name", array())) {
                         echo "<span class=\"";
                         echo twig_escape_filter($this->env, ($context["css_classes_bracket"] ?? null), "html", null, true);
                         echo "\"> (</span>";
                     }
-                    // line 30
-                    echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "display_name", array()), "html", null, true);
                     // line 31
+                    echo twig_escape_filter($this->env, $this->getAttribute($context["language"], "display_name", array()), "html", null, true);
+                    // line 32
                     if ($this->getAttribute($context["language"], "native_name", array())) {
                         echo "<span class=\"";
                         echo twig_escape_filter($this->env, ($context["css_classes_bracket"] ?? null), "html", null, true);
                         echo "\">)</span>";
                     }
-                    // line 32
+                    // line 33
                     echo "</span>";
                 }
             }
-            // line 36
+            // line 37
             echo "</a>
 \t\t\t</li>";
         }
         $_parent = $context['_parent'];
         unset($context['_seq'], $context['_iterated'], $context['code'], $context['language'], $context['_parent'], $context['loop']);
         $context = array_intersect_key($context, $_parent) + $_parent;
-        // line 40
+        // line 41
         echo "</ul>
 </div>";
     }
@@ -135,7 +133,7 @@ class __TwigTemplate_4fde17e0e5baebe3e7ac92c20041ea0a5400da93cdfad2f1e8e59c5995c
 
     public function getDebugInfo()
     {
-        return array (  122 => 40,  115 => 36,  111 => 32,  105 => 31,  103 => 30,  97 => 29,  93 => 28,  91 => 27,  84 => 24,  82 => 23,  75 => 19,  73 => 18,  71 => 16,  60 => 13,  58 => 12,  49 => 11,  44 => 10,  40 => 9,  30 => 6,  27 => 5,  25 => 4,  23 => 3,  21 => 2,  19 => 1,);
+        return array (  120 => 41,  113 => 37,  109 => 33,  103 => 32,  101 => 31,  95 => 30,  91 => 29,  89 => 28,  82 => 25,  80 => 24,  73 => 20,  71 => 19,  69 => 17,  58 => 14,  56 => 13,  51 => 12,  46 => 11,  42 => 10,  32 => 7,  29 => 6,  27 => 5,  25 => 4,  23 => 3,  21 => 2,  19 => 1,);
     }
 
     /** @deprecated since 1.27 (to be removed in 2.0). Use getSourceContext() instead */

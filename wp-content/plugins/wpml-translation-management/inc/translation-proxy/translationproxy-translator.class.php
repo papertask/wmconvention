@@ -39,7 +39,10 @@ class TranslationProxy_Translator {
 		}
 
 		$translator_status = array();
-		$website_details   = self::get_website_details( new TranslationProxy_Project( TranslationProxy::get_current_service() ), $force );
+		$website_details   = self::get_website_details(
+			new TranslationProxy_Project( TranslationProxy::get_current_service(), 'xmlrpc', TranslationProxy::get_tp_client() ),
+			$force
+		);
 
 		if ( false === (bool) $website_details ) {
 			return array();

@@ -135,15 +135,4 @@ RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /index.php [L]
 </IfModule>
 
-# protect xmlrpc
-<Files xmlrpc.php>
-Order Deny,Allow
-Deny from all
-</Files>
-
-#禁止浏览 WordPress 文件和文件夹
-Options All -Indexes
-
-
-
 # END WordPress
