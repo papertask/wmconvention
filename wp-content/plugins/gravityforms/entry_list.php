@@ -1183,7 +1183,6 @@ final class GF_Entry_List_Table extends WP_List_Table {
 	 * @return array
 	 */
 	function get_bulk_actions() {
-
 		$actions = array();
 
 		switch ( $this->filter ) {
@@ -1211,20 +1210,7 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					$actions['trash'] = esc_html__( 'Trash', 'gravityforms' );
 				}
 		}
-
-		// Get the current form ID.
-		$form_id = $this->get_form_id();
-
-		/**
-		 * Modifies available bulk actions for the entries list.
-		 *
-		 * @since 2.2.3.12
-		 *
-		 * @param array $actions Bulk actions.
-		 * @param int   $form_id The ID of the current form.
-		 */
-		return gf_apply_filters( array( 'gform_entry_list_bulk_actions', $form_id ), $actions, $form_id );
-
+		return $actions;
 	}
 
 	/**
@@ -1293,16 +1279,6 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					break;
 
 			}
-
-			/**
-			 * Fires after the default entry list actions have been processed.
-			 *
-			 * @param string $action  Action being performed.
-			 * @param array  $entries The entry IDs the action is being applied to.
-			 * @param int    $form_id The current form ID.
-			 */
-			gf_do_action( array( 'gform_entry_list_action', $single_action, $form_id ), $single_action, array( $entry_id ), $form_id );
-
 		} elseif ( $bulk_action ) {
 
 			$select_all  = rgpost( 'all_entries' );
@@ -1363,16 +1339,6 @@ final class GF_Entry_List_Table extends WP_List_Table {
 					break;
 
 			}
-
-			/**
-			 * Fires after the default entry list actions have been processed.
-			 *
-			 * @param string $action  Action being performed.
-			 * @param array  $entries The entry IDs the action is being applied to.
-			 * @param int    $form_id The current form ID.
-			 */
-			gf_do_action( array( 'gform_entry_list_action', $bulk_action, $form_id ), $bulk_action, $entries, $form_id );
-
 		}
 
 		if ( ! empty( $message ) ) {

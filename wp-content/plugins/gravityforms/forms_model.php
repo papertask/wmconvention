@@ -1406,11 +1406,12 @@ class GFFormsModel {
 		$wpdb->query( $sql );
 	}
 
-	/**
-	 * Delete the views for the specified form.
-	 *
-	 * @param int $form_id The form ID.
-	 */
+
+
+
+
+
+
 	public static function delete_views( $form_id ) {
 		global $wpdb;
 
@@ -1420,7 +1421,7 @@ class GFFormsModel {
 		$sql = $wpdb->prepare( "DELETE FROM $form_view_table WHERE form_id=%d", $form_id );
 		$wpdb->query( $sql );
 
-		/**
+        /**
          * Fires after form views are deleted
          *
          * @param int $form_id The ID of the form that views were deleted from
@@ -2517,7 +2518,7 @@ class GFFormsModel {
 			return GFCommon::clean_number( $text, $number_format );
 		}
 
-		return 0;
+		return $text;
 	}
 
 	public static function matches_operation( $val1, $val2, $operation ) {
@@ -2987,7 +2988,7 @@ class GFFormsModel {
 				if ( ! empty( $val ) ) {
 
 					// replace commas in individual values to prevent individual value from being split into multiple values (checkboxes, multiselects)
-					if ( $field->get_input_type() === 'checkbox' ) {
+					if ( in_array( $field->get_input_type(), array( 'checkbox', 'multiselect' ) ) ) {
 						$val = str_replace( ',', '&#44;', $val );
 					}
 
@@ -2997,16 +2998,6 @@ class GFFormsModel {
 			$value = implode( ',', $value );
 		} else {
 			$value = isset( $lead[ $field->id ] ) ? $lead[ $field->id ] : '';
-
-			if ( ! empty( $value ) && $field->get_input_type() === 'multiselect' ) {
-				$items = $field->to_array( $value );
-
-				foreach ( $items as &$item ) {
-					$item = str_replace( ',', '&#44;', $item );
-				}
-
-				$value = implode( ',', $items );
-			}
 		}
 
 		return $value;
@@ -3021,9 +3012,6 @@ class GFFormsModel {
 		$images                          = array();
 
 		foreach ( $form['fields'] as $field ) {
-			if ( self::is_field_hidden( $form, $field, array(), $lead ) ) {
-				continue;
-			}
 
 			if ( $field->type == 'post_category' ) {
 				$field = GFCommon::add_categories_as_choices( $field, '' );
@@ -3174,11 +3162,11 @@ class GFFormsModel {
 
 		// special format for Post Category fields
 		if ( $field->type == 'post_category' ) {
-			$is_multiselect = $field->inputType === 'multiselect';
-			$full_values    = array();
+
+			$full_values = array();
 
 			if ( ! is_array( $value ) ) {
-				$value = $is_multiselect ? $field->to_array( $value ) : explode( ',', $value );
+				$value = explode( ',', $value );
 			}
 
 			foreach ( $value as $cat_id ) {
@@ -3186,7 +3174,7 @@ class GFFormsModel {
 				$full_values[] = ! is_wp_error( $cat ) && is_object( $cat ) ? $cat->name . ':' . $cat_id : '';
 			}
 
-			$value = $is_multiselect ? $field->to_string( $full_values ) : implode( ',', $full_values );
+			$value = implode( ',', $full_values );
 		}
 
 		//do not save price fields with blank price
@@ -4110,7 +4098,7 @@ class GFFormsModel {
 		return $drop_tables;
 	}
 
-	public static function insert_form_view( $form_id, $deprecated = null ) {
+	public static function insert_form_view( $form_id, $ip ) {
 		global $wpdb;
 		$table_name = self::get_form_view_table_name();
 
@@ -4123,7 +4111,7 @@ class GFFormsModel {
 		$id = $wpdb->get_var( $sql, 0, 0 );
 
 		if ( empty( $id ) ) {
-			$wpdb->query( $wpdb->prepare( "INSERT INTO $table_name(form_id, date_created, ip) values(%d, utc_timestamp(), %s)", $form_id, '' ) );
+			$wpdb->query( $wpdb->prepare( "INSERT INTO $table_name(form_id, date_created, ip) values(%d, utc_timestamp(), %s)", $form_id, $ip ) );
 		} else {
 			$wpdb->query( $wpdb->prepare( "UPDATE $table_name SET count = count+1 WHERE id=%d", $id ) );
 		}
@@ -4169,13 +4157,12 @@ class GFFormsModel {
 		$input_count = 1;
 		if ( is_array( $field->get_entry_inputs() ) ) {
 			$input_count = sizeof( $field->inputs );
-			$inner_sql   = '';
 			foreach ( $field->inputs as $input ) {
 				$union = empty( $inner_sql ) ? '' : ' UNION ALL ';
-				$inner_sql .= $union . $wpdb->prepare( $inner_sql_template, $input['id'], $form_id, $form_id, $input['id'] - 0.0001, $input['id'] + 0.0001, $value[ $input['id'] ] );
+				$inner_sql .= $union . $wpdb->prepare( $inner_sql_template, $input['id'], $form_id, $form_id, $input['id'] - 0.0001, $input['id'] + 0.0001, $value[ $input['id'] ], $value[ $input['id'] ] );
 			}
 		} else {
-			$inner_sql = $wpdb->prepare( $inner_sql_template, $field->id, $form_id, $form_id, doubleval( $field->id ) - 0.0001, doubleval( $field->id ) + 0.0001, $value );
+			$inner_sql = $wpdb->prepare( $inner_sql_template, $field->id, $form_id, $form_id, doubleval( $field->id ) - 0.0001, doubleval( $field->id ) + 0.0001, $value, $value );
 		}
 
 		$sql .= $inner_sql . "
@@ -4758,7 +4745,7 @@ class GFFormsModel {
 		if ( ! $field instanceof GF_Field ) {
 			$field = GF_Fields::create( $field );
 		}
-		$field_label = ( GFForms::get_page() || RG_CURRENT_PAGE == 'select_columns.php' || RG_CURRENT_PAGE == 'print-entry.php' || rgget( 'gf_page', $_GET ) == 'select_columns' || rgget( 'gf_page', $_GET ) == 'print-entry' ) && ! empty( $field->adminLabel ) && $allow_admin_label ? $field->adminLabel : $field->label;
+		$field_label = ( IS_ADMIN || RG_CURRENT_PAGE == 'select_columns.php' || RG_CURRENT_PAGE == 'print-entry.php' || rgget( 'gf_page', $_GET ) == 'select_columns' || rgget( 'gf_page', $_GET ) == 'print-entry' ) && ! empty( $field->adminLabel ) && $allow_admin_label ? $field->adminLabel : $field->label;
 		$input       = self::get_input( $field, $input_id );
 		if ( self::get_input_type( $field ) == 'checkbox' && $input != null ) {
 			return $input['label'];
@@ -5346,9 +5333,7 @@ class GFFormsModel {
 						}
 					}
 
-
-
-					$upper_field_number_limit = (string) (int) $key === (string) $key ? (float) $key + 0.9999 : (float) $key + 0.0001;
+					$search_term_placeholder = rgar( $search, 'is_numeric' ) || $is_number_field ? '%f' : '%s';
 
 					if ( is_array( $search_term ) ) {
 						if ( in_array( $operator, array( '=', 'in' ) ) ) {
@@ -5358,24 +5343,14 @@ class GFFormsModel {
 						}
 						// Format in SQL and sanitize the strings in the list
 						$search_terms = array_fill( 0, count( $search_term ), '%s' );
-						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
+						$search_term_placeholder = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
+						$search_term = ''; // Set to blank, still gets passed to wpdb::prepare below but isn't used
+					}
 
-						/* doesn't support "<>" for checkboxes */
-						$field_query = $wpdb->prepare(
-							"
-                        l.id IN
-                        (
-                        SELECT
-                        lead_id
-                        from {$lead_details_table_name}
-                        WHERE (field_number BETWEEN %s AND %s AND value {$operator} {$search_terms_in})
-                        {$form_id_where}
-                        )", (float) $key - 0.0001, $upper_field_number_limit );
-					} else {
-						$search_term_placeholder = rgar( $search, 'is_numeric' ) || $is_number_field ? '%f' : '%s';
-						/* doesn't support "<>" for checkboxes */
-						$field_query = $wpdb->prepare(
-							"
+					$upper_field_number_limit = (string) (int) $key === (string) $key ? (float) $key + 0.9999 : (float) $key + 0.0001;
+					/* doesn't support "<>" for checkboxes */
+					$field_query = $wpdb->prepare(
+						"
                         l.id IN
                         (
                         SELECT
@@ -5384,8 +5359,8 @@ class GFFormsModel {
                         WHERE (field_number BETWEEN %s AND %s AND value {$operator} {$search_term_placeholder})
                         {$form_id_where}
                         )", (float) $key - 0.0001, $upper_field_number_limit, $search_term
-						);
-					}
+					);
+
 
 					if ( ( empty( $val ) && $operator != '<>' ) || $val === '%%' || ( $operator === '<>' && ! empty( $val ) ) ) {
 						$skipped_field_query = $wpdb->prepare(
@@ -5397,7 +5372,7 @@ class GFFormsModel {
                             from {$lead_details_table_name}
                             WHERE (field_number BETWEEN %s AND %s)
                             {$form_id_where}
-                            )", (float) $key - 0.0001, $upper_field_number_limit
+                            )", (float) $key - 0.0001, $upper_field_number_limit, $search_term
 						);
 						$field_query = '(' . $field_query . ' OR ' . $skipped_field_query . ')';
 					}
@@ -5481,6 +5456,10 @@ class GFFormsModel {
 				case 'meta':
 					/* doesn't support '<>' for multiple values of the same key */
 
+					$meta        = rgar( $entry_meta, $key );
+					$placeholder = rgar( $meta, 'is_numeric' ) ? '%s' : '%s';
+					$search_term = 'like' == $operator ? "%$val%" : $val;
+
 					if ( is_array( $search_term ) ) {
 						if ( in_array( $operator, array( '=', 'in' ) ) ) {
 							$operator = 'IN';
@@ -5488,23 +5467,12 @@ class GFFormsModel {
 							$operator = 'NOT IN';
 						}
 						$search_terms = array_fill( 0, count( $search_term ), '%s' );
-						$search_terms_in = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
+						$placeholder = $wpdb->prepare( '( ' . implode( ', ', $search_terms ) . ' )', $search_term );
 
-						$sql_array[] = $wpdb->prepare(
-						"
-                        l.id IN
-                        (
-                        SELECT
-                        lead_id
-                        FROM $lead_meta_table_name
-                        WHERE meta_key=%s AND meta_value $operator $search_terms_in
-                        $form_id_where
-                        )", $search['key'] );
-					} else {
-						$meta = rgar( $entry_meta, $key );
-						$placeholder = rgar( $meta, 'is_numeric' ) ? '%s' : '%s';
-						$search_term = 'like' == $operator ? "%$val%" : $val;
-						$sql_array[] = $wpdb->prepare(
+						$search_term = '';
+					}
+
+					$sql_array[] = $wpdb->prepare(
 						"
                         l.id IN
                         (
@@ -5514,10 +5482,9 @@ class GFFormsModel {
                         WHERE meta_key=%s AND meta_value $operator $placeholder
                         $form_id_where
                         )", $search['key'], $search_term
-						);
-					}
-
+					);
 					break;
+
 			}
 		}
 
@@ -6249,17 +6216,16 @@ function gform_get_meta_values_for_entries( $entry_ids, $meta_keys ) {
 	return $meta_value_array;
 }
 
+
 /**
- * Add or update metadata associated with an entry.
+ * Add or update metadata associated with an entry
  *
  * Data will be serialized. Don't forget to sanitize user input.
  *
- * @since Unknown
- *
- * @param int      $entry_id   The ID of the entry to be updated.
- * @param string   $meta_key   The key for the meta data to be stored.
- * @param mixed    $meta_value The data to be stored for the entry.
- * @param int|null $form_id    The form ID of the entry (optional, saves extra query if passed when creating the metadata).
+ * @param int $entry_id The ID of the entry to be updated
+ * @param string $meta_key The key for the meta data to be stored
+ * @param mixed $meta_value The data to be stored for the entry
+ * @param int|null $form_id The form ID of the entry (optional, saves extra query if passed when creating the metadata)
  */
 function gform_update_meta( $entry_id, $meta_key, $meta_value, $form_id = null ) {
 	global $wpdb, $_gform_lead_meta;
@@ -6296,16 +6262,14 @@ function gform_update_meta( $entry_id, $meta_key, $meta_value, $form_id = null )
 }
 
 /**
- * Add metadata associated with an entry.
+ * Add metadata associated with an entry
  *
  * Data will be serialized; Don't forget to sanitize user input.
  *
- * @since Unknown
- *
- * @param int      $entry_id   The ID of the entry where metadata is to be added.
- * @param string   $meta_key   The key for the meta data to be stored.
- * @param mixed    $meta_value The data to be stored for the entry.
- * @param int|null $form_id    The form ID of the entry (optional, saves extra query if passed when creating the metadata).
+ * @param int $entry_id The ID of the entry where metadata is to be added
+ * @param string $meta_key The key for the meta data to be stored
+ * @param mixed $meta_value The data to be stored for the entry
+ * @param int|null $form_id The form ID of the entry (optional, saves extra query if passed when creating the metadata)
  */
 function gform_add_meta( $entry_id, $meta_key, $meta_value, $form_id = null ) {
 	global $wpdb, $_gform_lead_meta;
@@ -6331,14 +6295,6 @@ function gform_add_meta( $entry_id, $meta_key, $meta_value, $form_id = null ) {
 
 }
 
-/**
- * Delete metadata associated with an entry.
- *
- * @since Unknown
- *
- * @param int    $entry_id The ID of the entry to be deleted.
- * @param string $meta_key The key for the meta data to be deleted.
- */
 function gform_delete_meta( $entry_id, $meta_key = '' ) {
 	global $wpdb, $_gform_lead_meta;
 	$table_name  = RGFormsModel::get_lead_meta_table_name();

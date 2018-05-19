@@ -753,13 +753,9 @@ class GFExport {
 				foreach ( $fields as $field_id ) {
 					switch ( $field_id ) {
 						case 'date_created' :
-						case 'payment_date' :
-							$value = $lead[ $field_id ];
-							if ( $value ) {
-								$lead_gmt_time   = mysql2date( 'G', $value );
-								$lead_local_time = GFCommon::get_local_timestamp( $lead_gmt_time );
-								$value           = date_i18n( 'Y-m-d H:i:s', $lead_local_time, true );
-							}
+							$lead_gmt_time   = mysql2date( 'G', $lead['date_created'] );
+							$lead_local_time = GFCommon::get_local_timestamp( $lead_gmt_time );
+							$value           = date_i18n( 'Y-m-d H:i:s', $lead_local_time, true );
 							break;
 						default :
 							$field = RGFormsModel::get_field( $form, $field_id );

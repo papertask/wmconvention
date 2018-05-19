@@ -44,6 +44,7 @@ class GF_Field_Number extends GF_Field {
 		$value = $this->get_input_value_submission( 'input_' . $this->id, $this->inputName, $field_values, $get_from_post_global_var );
 		$value = trim( $value );
 		if ( $this->numberFormat == 'currency' ) {
+			require_once( GFCommon::get_base_path() . '/currency.php' );
 			$currency = new RGCurrency( GFCommon::get_currency() );
 			$value    = $currency->to_number( $value );
 		} elseif ( $this->numberFormat == 'decimal_comma' ) {
@@ -57,14 +58,15 @@ class GF_Field_Number extends GF_Field {
 
 	public function validate( $value, $form ) {
 
-		// The POST value has already been converted from currency or decimal_comma to decimal_dot and then cleaned in get_field_value().
-		$value = GFCommon::maybe_add_leading_zero( $value );
+		// the POST value has already been converted from currency or decimal_comma to decimal_dot and then cleaned in get_field_value()
 
-		// Raw value will be tested against the is_numeric() function to make sure it is in the right format.
-		$raw_value = GFCommon::maybe_add_leading_zero( rgpost( 'input_' . $this->id ) );
+		$value     = GFCommon::maybe_add_leading_zero( $value );
+		$raw_value = rgar( $_POST, 'input_' . $this->id, '' ); //Raw value will be tested against the is_numeric() function to make sure it is in the right format.
 
 		$requires_valid_number = ! rgblank( $raw_value ) && ! $this->has_calculation();
-		$is_valid_number       = $this->validate_range( $value ) && GFCommon::is_numeric( $raw_value, $this->numberFormat );
+
+		$raw_value       = GFCommon::maybe_add_leading_zero( $raw_value );
+		$is_valid_number = $this->validate_range( $value ) && GFCommon::is_numeric( $raw_value, $this->numberFormat );
 
 		if ( $requires_valid_number && ! $is_valid_number ) {
 			$this->failed_validation  = true;
@@ -84,7 +86,7 @@ class GF_Field_Number extends GF_Field {
 	/**
 	 * Validates the range of the number according to the field settings.
 	 *
-	 * @param string $value A decimal_dot formatted string
+	 * @param array $value A decimal_dot formatted string
 	 *
 	 * @return true|false True on valid or false on invalid
 	 */

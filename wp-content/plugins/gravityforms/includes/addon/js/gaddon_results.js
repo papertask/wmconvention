@@ -52,8 +52,7 @@ var gresults = {
         var filterButtons = jQuery("#gresults-results-filter-buttons input");
         var loading = jQuery(".gresults-filter-loading");
         var viewSlug = jQuery("#gresults-view-slug").val();
-		var nonce = jQuery("#_gf_results_nonce").val()
-        var data_str = "action=gresults_get_results_" + viewSlug + "&" + gresultsData + '&_gf_results_nonce' + nonce ;
+        var data_str = "action=gresults_get_results_" + viewSlug + "&" + gresultsData;
         if (serverStateObject)
             data_str += "&state=" + serverStateObject + "&checkSum=" + checkSum;
 

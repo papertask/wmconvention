@@ -137,7 +137,8 @@ class GF_Field_MultiSelect extends GF_Field {
 	 */
 	public function get_choices( $value ) {
 
-		$value = $this->to_array( $value );
+		// If we are in the entry editor, convert value to an array.
+		$value = $this->is_entry_detail() ? $this->to_array( $value ) : $value;
 
 		return GFCommon::get_select_choices( $this, $value, false );
 
@@ -353,16 +354,11 @@ class GF_Field_MultiSelect extends GF_Field {
 	 * @return array The converted array.
 	 */
 	public function to_array( $value ) {
-		if ( empty( $value ) ) {
-			return array();
-		} elseif ( is_array( $value ) ) {
-			return $value;
-		} elseif ( $this->storageType !== 'json' || $value[0] !== '[' ) {
-			return array_map( 'trim', explode( ',', $value ) );
-		} else {
+		if ( $this->storageType === 'json' ) {
 			$json = json_decode( $value, true );
-
 			return $json == null ? array() : $json;
+		} else {
+			return explode( ',', $value );
 		}
 	}
 
