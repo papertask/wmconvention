@@ -1,0 +1,137 @@
+0000.005 () Opened log file at time: Thu, 21 Jun 2018 01:40:08 +0000 on http://wmconvention.org
+0000.005 () UpdraftPlus WordPress backup plugin (https://updraftplus.com): 1.14.11 WP: 4.9.6 PHP: 7.0.30-0ubuntu0.16.04.1 (apache2handler, Linux 10-37-29-84 4.4.0-128-generic #154-Ubuntu SMP Fri May 25 14:15:18 UTC 2018 x86_64) MySQL: 5.7.22 WPLANG: zh_CN Server: Apache/2.4.18 (Ubuntu) safe_mode: 0 max_execution_time: 900 memory_limit: 256M (used: 32M | 20M) multisite: N openssl: OpenSSL 1.0.2g  1 Mar 2016 mcrypt: Y LANG: C ZipArchive::addFile: Y
+0000.005 () Free space on disk containing Updraft's temporary directory: 7657.1 MB
+0000.007 () Restore job started. Entities to restore: db. Restore options: {"updraft_encryptionphrase":"","updraft_restorer_wpcore_includewpconfig":false,"updraft_incremental_restore_point":-1}
+0000.211 () Entity: db
+0000.211 () restore_backup(backup_file=backup_2018-06-20-1410_wmconventionorg_29bf84806aaf-db.gz, type=db, info=a:0:{}, last_one=1)
+0000.211 () 解压备份。。。 (backup_2018-06-20-1410_wmconventionorg_29bf84806aaf-db.gz, 4.9 Mb)
+0000.283 () Database successfully unpacked
+0000.284 () 数据库还原（大的网站，可能要持续很长时间）如果出现超时（如果您的主机提供商设置了资源限制），您可能需要使用其他方式备份，比如phpMyAdmin。。。
+0000.284 () Using direct MySQL access; value of use_mysqli is: 1
+0000.332 () Tried to raise max_allowed_packet from 16 MB to 32 MB, but failed (Access denied; you need (at least one of) the SUPER privilege(s) for this operation, b:0;)
+0000.332 () Max packet size: 16 MB
+0000.332 () Entering maintenance mode
+0000.332 () 正在启用维护模式&#8230;
+0000.332 () Backup of: http://wmconvention.org
+0000.333 () Content URL: http://wmconvention.org/wp-content
+0000.333 () Uploads URL: http://wmconvention.org/wp-content/uploads
+0000.333 () Old table prefix: wp_
+0000.334 () Site information: multisite=0
+0000.350 () New table prefix: wp_
+0000.370 () Processing table (InnoDB): wp_options
+0000.528 () Restoring prior UD configuration (table: wp_options; keys: 3)
+0000.555 () Processing table (InnoDB): wp_users
+0000.590 () Processing table (InnoDB): wp_usermeta
+0000.627 () Processing table (InnoDB): wp_commentmeta
+0000.654 () Processing table (InnoDB): wp_comments
+0000.686 () Processing table (InnoDB): wp_links
+0000.721 () Processing table (InnoDB): wp_postmeta
+0001.131 () Processing table (InnoDB): wp_posts
+0001.576 () Processing table (InnoDB): wp_term_relationships
+0001.622 () Processing table (InnoDB): wp_term_taxonomy
+0001.644 () Processing table (InnoDB): wp_termmeta
+0001.663 () Database queries processed: 50 in 1.37 seconds
+0001.664 () Processing table (InnoDB): wp_terms
+0001.711 () Processing table (InnoDB): wp_frm_fields
+0001.727 () Processing table (InnoDB): wp_frm_forms
+0001.754 () Processing table (InnoDB): wp_frm_item_metas
+0001.777 () Processing table (InnoDB): wp_frm_items
+0001.816 () Processing table (InnoDB): wp_gf_draft_submissions
+0001.836 () Processing table (InnoDB): wp_gf_entry
+0001.866 () Processing table (InnoDB): wp_gf_entry_meta
+0001.907 () Processing table (InnoDB): wp_gf_entry_notes
+0001.928 () Processing table (InnoDB): wp_gf_form
+0001.960 () Processing table (InnoDB): wp_gf_form_meta
+0001.984 () Processing table (InnoDB): wp_gf_form_view
+0002.017 () Processing table (InnoDB): wp_icl_content_status
+0002.029 () Processing table (InnoDB): wp_icl_core_status
+0002.052 () Processing table (InnoDB): wp_icl_flags
+0002.064 () Processing table (InnoDB): wp_icl_languages
+0002.087 () Processing table (InnoDB): wp_icl_languages_translations
+0002.176 () Processing table (InnoDB): wp_icl_locale_map
+0002.184 () Database queries processed: 100 in 1.89 seconds
+0002.227 () Processing table (InnoDB): wp_icl_message_status
+0002.256 () Processing table (InnoDB): wp_icl_mo_files_domains
+0002.294 () Processing table (InnoDB): wp_icl_node
+0002.307 () Processing table (InnoDB): wp_icl_reminders
+0002.316 () Processing table (InnoDB): wp_icl_string_packages
+0002.343 () Processing table (InnoDB): wp_icl_string_pages
+0002.904 () Processing table (InnoDB): wp_icl_string_positions
+0002.939 () Processing table (InnoDB): wp_icl_string_status
+0002.955 () Processing table (InnoDB): wp_icl_string_translations
+0002.963 () Database queries processed: 150 in 2.66 seconds
+0003.251 () Processing table (InnoDB): wp_icl_string_urls
+0003.275 () Processing table (InnoDB): wp_icl_strings
+0004.100 () Processing table (InnoDB): wp_icl_translate
+0004.352 () Processing table (InnoDB): wp_icl_translate_job
+0004.395 () Processing table (InnoDB): wp_icl_translation_batches
+0004.412 () Database queries processed: 200 in 4.11 seconds
+0004.412 () Processing table (InnoDB): wp_icl_translation_status
+0004.572 () Processing table (InnoDB): wp_icl_translations
+0004.648 () Processing table (InnoDB): wp_masterslider_options
+0004.668 () Processing table (InnoDB): wp_masterslider_sliders
+0004.735 () Processing table (InnoDB): wp_newsletter
+0004.748 () Processing table (InnoDB): wp_newsletter_emails
+0004.759 () Processing table (InnoDB): wp_newsletter_sent
+0004.772 () Processing table (InnoDB): wp_newsletter_stats
+0004.799 () Processing table (InnoDB): wp_newsletter_user_logs
+0004.823 () Processing table (InnoDB): wp_nf3_action_meta
+0004.839 () Processing table (InnoDB): wp_nf3_actions
+0004.867 () Processing table (InnoDB): wp_nf3_field_meta
+0004.888 () Processing table (InnoDB): wp_nf3_fields
+0004.900 () Processing table (InnoDB): wp_nf3_form_meta
+0004.928 () Processing table (InnoDB): wp_nf3_forms
+0004.943 () Processing table (InnoDB): wp_nf3_object_meta
+0004.953 () Processing table (InnoDB): wp_nf3_objects
+0004.967 () Processing table (InnoDB): wp_nf3_relationships
+0004.977 () Processing table (InnoDB): wp_redirection_404
+0005.057 () Database queries processed: 250 in 4.76 seconds
+0005.181 () Processing table (InnoDB): wp_redirection_groups
+0005.195 () Processing table (InnoDB): wp_redirection_items
+0005.246 () Processing table (InnoDB): wp_redirection_logs
+0005.262 () Processing table (InnoDB): wp_rg_form
+0005.283 () Processing table (InnoDB): wp_rg_form_meta
+0005.324 () Processing table (InnoDB): wp_rg_form_view
+0005.350 () Processing table (InnoDB): wp_rg_incomplete_submissions
+0005.380 () Processing table (InnoDB): wp_rg_lead
+0005.422 () Processing table (InnoDB): wp_rg_lead_detail
+0005.676 () Processing table (InnoDB): wp_rg_lead_detail_long
+0005.688 () Processing table (InnoDB): wp_rg_lead_meta
+0005.704 () Processing table (InnoDB): wp_rg_lead_notes
+0005.764 () Processing table (InnoDB): wp_statistics_exclusions
+0005.801 () Processing table (InnoDB): wp_statistics_historical
+0005.880 () Processing table (InnoDB): wp_statistics_pages
+0006.177 () Processing table (InnoDB): wp_statistics_search
+0006.246 () Processing table (InnoDB): wp_statistics_useronline
+0006.270 () Processing table (InnoDB): wp_statistics_visit
+0006.352 () Processing table (InnoDB): wp_statistics_visitor
+0006.663 () Processing table (InnoDB): wp_wfBadLeechers
+0006.703 () Processing table (InnoDB): wp_wfBlockedCommentLog
+0006.714 () Processing table (InnoDB): wp_wfBlockedIPLog
+0006.731 () Processing table (InnoDB): wp_wfBlocks7
+0006.744 () Processing table (InnoDB): wp_wfConfig
+0006.815 () Processing table (InnoDB): wp_wfCrawlers
+0006.854 () Processing table (InnoDB): wp_wfFileChanges
+0006.888 () Processing table (InnoDB): wp_wfFileMods
+0007.159 () Processing table (InnoDB): wp_wfHits
+0007.363 () Processing table (InnoDB): wp_wfHoover
+0007.427 () Processing table (InnoDB): wp_wfIssues
+0007.500 () Processing table (InnoDB): wp_wfKnownFileList
+0007.666 () Processing table (InnoDB): wp_wfLeechers
+0007.707 () Processing table (InnoDB): wp_wfLiveTrafficHuman
+0007.724 () Processing table (InnoDB): wp_wfLocs
+0007.749 () Processing table (InnoDB): wp_wfLogins
+0007.785 () Processing table (InnoDB): wp_wfNet404s
+0007.795 () Processing table (InnoDB): wp_wfNotifications
+0007.821 () Processing table (InnoDB): wp_wfPendingIssues
+0007.847 () Processing table (InnoDB): wp_wfReverseCache
+0007.859 () Processing table (InnoDB): wp_wfSNIPCache
+0007.871 () Processing table (InnoDB): wp_wfScanners
+0007.893 () Processing table (InnoDB): wp_wfStatus
+0007.968 () Processing table (InnoDB): wp_wfVulnScanners
+0007.983 () Unlocking database and leaving maintenance mode
+0008.030 () 正在停用维护模式&#8230;
+0008.032 () Finished: lines processed: 415 in 7.73 seconds
+0008.033 () 清理垃圾。。。
+0008.350 () Restore successful!
+0008.350 () Restore successful

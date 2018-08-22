@@ -5,7 +5,7 @@ $controls = new NewsletterControls();
 $module = NewsletterEmails::instance();
 
 // Always required
-$email = Newsletter::instance()->get_email($_GET['id'], ARRAY_A);
+$email = $module->get_email($_GET['id'], ARRAY_A);
 if (empty($email['query'])) {
     $email['query'] = "select * from " . NEWSLETTER_USERS_TABLE . " where status='C'";
 }
@@ -256,6 +256,11 @@ if ($email['editor'] == 0) {
 
 if (isset($controls->data['options_status']) && $controls->data['options_status'] == 'S') {
     $controls->warnings[] = __('This newsletter will be sent to not confirmed subscribers.', 'newsletter');
+}
+
+if (strpos($controls->data['message'], '{profile_url}') === false && strpos($controls->data['message'], '{unsubscription_url}') === false
+        && strpos($controls->data['message'], '{unsubscription_confirm_url}') === false) {
+    $controls->warnings[] = __('The message is missing the subscriber profile or cancellation link.', 'newsletter');
 }
 
 /*

@@ -107,12 +107,14 @@ class NewsletterEmails extends NewsletterModule {
         $content = $this->inline_css($content, true);
 
         // CSS driven by the block
-        if (!isset($options['block_background'])) $options['block_background'] = '';
-            $style = '';
-            if (isset($options['block_padding_top'])) $style .= 'padding-top: ' . $options['block_padding_top'] . '; ';
-            if (isset($options['block_padding_left'])) $style .= 'padding-left: ' . $options['block_padding_left'] . '; ';
-            if (isset($options['block_padding_right'])) $style .= 'padding-right: ' . $options['block_padding_right'] . '; ';
-            if (isset($options['block_padding_bottom'])) $style .= 'padding-bottom: ' . $options['block_padding_bottom'] . '; ';
+        if (!isset($options['block_background'])) {
+            $options['block_background'] = '';
+        }
+        $style = '';
+            if (isset($options['block_padding_top'])) $style .= 'padding-top: ' . $options['block_padding_top'] . 'px; ';
+            if (isset($options['block_padding_left'])) $style .= 'padding-left: ' . $options['block_padding_left'] . 'px; ';
+            if (isset($options['block_padding_right'])) $style .= 'padding-right: ' . $options['block_padding_right'] . 'px; ';
+            if (isset($options['block_padding_bottom'])) $style .= 'padding-bottom: ' . $options['block_padding_bottom'] . 'px; ';
             
         // Old block type
         if ($is_old_block) {
@@ -436,6 +438,10 @@ class NewsletterEmails extends NewsletterModule {
         // main options merge
         $main_options = Newsletter::instance()->options;
         foreach ($main_options as $key => $value) {
+            $theme_options['main_' . $key] = $value;
+        }
+        $info_options = Newsletter::instance()->get_options('info');
+        foreach ($info_options as $key => $value) {
             $theme_options['main_' . $key] = $value;
         }
         return $theme_options;

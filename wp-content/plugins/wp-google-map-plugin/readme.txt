@@ -2,12 +2,12 @@
 
 Contributors:      flippercode
 Plugin Name:       WP Google Map Plugin
-Tags: maps, google maps, google maps plugin, wordpress google maps, map, map plugin, custom marker, map category, marker category, google map, wp google map, custom google maps, snazzymaps, map skin 
+Tags: maps, google maps, gmaps, google maps plugin, markers
 Author URI:        http://profiles.wordpress.org/flippercode/
 Author:            flippercode
 Donate link:       (a link for donating)
 Requires at least: 3.4
-Tested up to: 4.9.2
+Tested up to: 4.9.6
 Stable tag: trunk
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -109,7 +109,7 @@ Google autosuggest enabled location form helps you to create unlimited markers a
 
 = Live Examples =
 
-* [Google Maps Pro Plugin Live Demo](http://wpgmp.flippercode.com/)
+* [Google Maps Pro Plugin Live Demo](http://www.wpmapspro.com)
 
 
 == Installation ==
@@ -148,6 +148,9 @@ This section describes how to install the plugin and get it working.
 11. Display traffic real time conditions with traffic layer.
 
 == Changelog ==
+
+= 4.0.6 =
+* Fix: Optimized CSS and removed unused CSS, Files and Code.
 
 = 4.0.3 =
 * Fix: Removed unused file.
@@ -298,6 +301,6 @@ Yes, You can mail us your requirement at hello at flippercode dot com.
 
 == Links ==
 [Available on Codecanyon](http://codecanyon.net/item/advanced-google-maps-plugin-for-wordpress/5211638) |
-[Live Examples](http://wpgmp.flippercode.com) |
+[Live Examples](http://www.wpmapspro.com) |
 [Developed by flippercode](http://www.flippercode.com)
 

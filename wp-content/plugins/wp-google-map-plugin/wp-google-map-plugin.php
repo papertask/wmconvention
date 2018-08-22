@@ -5,7 +5,7 @@ Plugin URI: http://www.flippercode.com/
 Description: A Responsive Google Maps plugin to display custom markers on the google maps. Show custom message with links on a marker click.
 Author: flippercode
 Author URI: http://www.flippercode.com/
-Version: 4.0.4
+Version: 4.0.6
 Text Domain: wp-google-map-plugin
 Domain Path: /lang/
 */
@@ -58,7 +58,6 @@ if ( ! class_exists( 'FC_Google_Maps_Lite' ) ) {
 			add_action( 'admin_menu', array( $this, 'create_menu' ) );
 			add_action( 'media_upload_ell_insert_gmap_tab', array( $this, 'wpgmp_google_map_media_upload_tab' ) );
 			add_action( 'wp_enqueue_scripts', array( $this, 'wpgmp_frontend_scripts' ) );
-			add_action( 'admin_print_scripts', array( $this, 'wpgmp_backend_styles' ) );
 
 			// Filters.
 			add_filter( 'media_upload_tabs', array( $this, 'wpgmp_google_map_tabs_filter' ) );
@@ -395,13 +394,7 @@ if ( ! class_exists( 'FC_Google_Maps_Lite' ) ) {
 				}
 			}
 		}
-		/**
-		 * Metabox stylesheet.
-		 */
-		function wpgmp_backend_styles() {
-
-			wp_enqueue_style( 'wpgmp-backend-metabox', WPGMP_CSS.'wpgmp-metabox-css.css' );
-		}
+		
 		/**
 		 * Load plugin language file.
 		 */
@@ -644,7 +637,7 @@ if ( ! class_exists( 'FC_Google_Maps_Lite' ) ) {
 			}
 
 			if ( ! defined( 'WPGMP_VERSION' ) ) {
-				define( 'WPGMP_VERSION', '4.0.4' );
+				define( 'WPGMP_VERSION', '4.0.6' );
 			}
 
 			if ( ! defined( 'WPGMP_TEXT_DOMAIN' ) ) {

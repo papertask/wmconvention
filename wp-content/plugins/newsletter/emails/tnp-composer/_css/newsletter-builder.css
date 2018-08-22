@@ -166,9 +166,13 @@
 }
 .tnpc-row:hover {
     cursor: move;
+    /*border: 2px dashed #999;*/
     -webkit-box-shadow:  0px 0px 20px 0px rgba(0,0,0,0.2);
     -moz-box-shadow:  0px 0px 20px 0px rgba(0,0,0,0.2);
     box-shadow:  0px 0px 20px 0px rgba(0,0,0,0.2);
+}
+.tnpc-row.ui-sortable-helper {
+    max-width: 700px!important;
 }
 .tnpc-row-delete, .tnpc-row-edit-block {
     height: 30px;
@@ -479,6 +483,13 @@
     margin-top: 10px;
 }
 
+.tnpc-preview .fake-browser-ui iframe {
+    width: 700px;
+}
+
+.tnpc-preview .fake-mobile-browser-ui iframe {
+    width: 320px;
+}
 
 .fake-browser-ui {
     padding: 30px 0 0;
